@@ -1,0 +1,100 @@
+{
+    "name": "Help",
+    "description": "Bot guide and module/commands list and information.",
+    "commands": {
+        "help": {
+            "description": "Get bot prefix and learn how to access information about modules and commands of this bot.",
+            "params": {
+                "keyword": "A keyword specifying what module or command you want information about. If left out, the default bot guide is returned."
+            },
+            "usage": {
+                "{prefix}help": "Returns guide.",
+                "{prefix}help module": "Returns information about the `module` command."
+            },
+            "embed": {
+                "title": "Guide and Help",
+                "description": "Hello, I'm {me.name}! My prefix on **{guild.name}** is `{prefix}`. Here's how to access the bot's information and get the details of every command and module.",
+                "thumbnail": {
+                    "url": "{me.avatar_url}"
+                },
+                "author": {
+                    "name": "{me.name}#{me.discriminator} | Nickname: {me.display_name}",
+                    "icon_url": "{me.avatar_url}"
+                },
+                "fields": [
+                    {
+                        "name": "Help",
+                        "value": "To see a list of all the available modules, run `{prefix}modules`.\nTo get information about a certain command, run `{prefix}command [command_name]`.\nTo get information about a module, run `{prefix}module [module_name]`.\nAlternatively, run `{prefix}help [keyword]`, but this will return a module first if a command and module name are the same."
+                    },
+                    {
+                        "name": "Invite",
+                        "value": "[Invite {me.name} to a server.](https://discord.com/api/oauth2/authorize?client_id=823791910597689385&permissions=8&scope=bot)"
+                    }
+                ]
+            },
+            "errors": {
+                "BadArgument": "Argument \"{keyword}\" is not an existing or visible module, and is not an existing or enabled command."
+            }
+        },
+        "modules": {
+            "description": "Get a list of all visible modules.",
+            "embed": {
+                "title": "List of enabled and visible modules",
+                "description": "To get more information about a specific module, run `>module [module_name]`"
+            },
+            "errors": {
+                "BadArgument": "Argument \"{keyword}\" is not an existing or visible module, and is not an existing or enabled command."
+            }
+        },
+        "module": {
+            "description": "View information about a module, and a list of commands available from that module.",
+            "params": {
+                "module_name": "Name of the wanted module. Use underscores instead of space when naming modules."
+            },
+            "usage": {
+                "{prefix}module Example_module": "Returns information about the `ExampleModule` module."
+            },
+            "embed": {
+                "title": "Module Guide for {module[name]}",
+                "description": "{module[description]}\nTo get more information about a specific command, run `{prefix}command [command_name]`"
+            },
+            "errors": {
+                "BadArgument": "Argument \"{module_name}\" is not an existing or visible module. Did you make sure to replace spaces with underscores?"
+            }
+        },
+        "command": {
+            "description": "View information about a command.",
+            "params": {
+                "command_name": "Name of the wanted command."
+            },
+            "usage": {
+                "{prefix}command example_command": "Returns information about the `example_command` command."
+            },
+            "embed": {
+                "title": "Command `{command.qualified_name}`",
+                "description": "{command_info[description]}",
+                "fields": [
+                    {
+                        "name": "Aliases",
+                        "value": "{aliases}"
+                    },
+                    {
+                        "name": "Parameters",
+                        "value": "{params}"
+                    },
+                    {
+                        "name": "Usage/Examples",
+                        "value": "{usage}"
+                    },
+                    {
+                        "name": "Guide/Extra Information",
+                        "value": "{guide}"
+                    }
+                ]
+            },
+            "errors": {
+                "BadArgument": "Argument \"{command_name}\" is not an existing or enabled command."
+            }
+        }
+    }
+}
