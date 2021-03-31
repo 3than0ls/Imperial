@@ -10,6 +10,8 @@ black = "*"
 discord-py = "*"
 python-dotenv = "*"
 pylint = "*"
+firebase-admin = "*"
+google-cloud-firestore = "*"
 
 [requires]
 python_version = "3.8"

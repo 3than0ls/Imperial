@@ -1,5 +1,6 @@
 {
     "name": "Dev",
-    "description": "Developer assistance module, capable of restarting and closing a Discord Bot by detecting given keywords **ONLY** from the user with the user ID set in `OWNER_UID` of the environment variables.\n\n**To close/quit the bot**, run `-Q` or `--quit`. This will sign the `self.close()` the discord bot and then `quit()` the python process.\n\n**To restart the bot**, run `-R` or `--restart`. This will close the discord bot, and then replace the current python process with a new one, which includes changes you may have made and saved since the last start/restart.\n\nThis cog is only enabled by setting the environment option \"`DEV`\" to anything truthy (ex: `1`, `True`, `\"Yes\"`). This cog does not have any commands, and only includes a `on_message` listener detecting the defined keywords.\n",
-    "commands": {}
+    "description": "Developer assistance module, capable of restarting and closing a Discord Bot. \n",
+    "commands": {},
+    "guide": "Capable of restarting and closing Discord Bot by detecting given keywords **ONLY** from the user with the user ID set in `OWNER_UID` of the environment variables.\n\n**To close/quit the bot**, run `-Q` or `--quit`. This will sign the `self.close()` the discord bot and then `quit()` the python process.\n\n**To restart the bot**, run `-R` or `--restart`. This will close the discord bot, and then replace the current python process with a new one, which includes changes you may have made and saved since the last start/restart.\n\nThis cog is only enabled by setting the environment option \"`DEV`\" to anything truthy (ex: `1`, `True`, `\"Yes\"`). This cog does not have any commands, and only includes a `on_message` listener detecting the defined keywords."
 }

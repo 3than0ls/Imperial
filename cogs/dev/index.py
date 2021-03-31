@@ -7,7 +7,7 @@ import traceback
 import discord
 from discord.ext import commands
 from utils.embed import EmbedFactory  # pylint: disable=import-error
-from utils.extended.cog import ExtendedCog  # pylint: disable=import-error
+from utils.cog import ExtendedCog  # pylint: disable=import-error
 
 
 class Dev(ExtendedCog):
@@ -22,13 +22,13 @@ class Dev(ExtendedCog):
         if str(message.author.id) == os.environ["OWNER_UID"]:
             if message.content == "--quit" or message.content == "-Q":
                 print("shutting down")
-                await self.close()
+                await self.bot.close()
                 quit()
 
             elif message.content == "--restart" or message.content == "-R":
                 print("restarting")
                 logging.error("--- RESTARTING ---")
-                await self.close()
+                await self.bot.close()
                 os.execl(sys.executable, *([sys.executable] + sys.argv))
 
 

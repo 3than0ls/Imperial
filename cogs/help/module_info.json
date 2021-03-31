@@ -28,7 +28,7 @@
                     },
                     {
                         "name": "Invite",
-                        "value": "[Invite {me.name} to a server.](https://discord.com/api/oauth2/authorize?client_id=823791910597689385&permissions=8&scope=bot)"
+                        "value": "[Invite {me.name} to a server.]({invite_url})"
                     }
                 ]
             },
@@ -56,7 +56,7 @@
             },
             "embed": {
                 "title": "Module Guide for {module[name]}",
-                "description": "{module[description]}\nTo get more information about a specific command, run `{prefix}command [command_name]`"
+                "description": "{module[description]}"
             },
             "errors": {
                 "BadArgument": "Argument \"{module_name}\" is not an existing or visible module. Did you make sure to replace spaces with underscores?"

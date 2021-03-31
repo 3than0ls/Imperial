@@ -1,9 +1,10 @@
+import os
 import pathlib
 
 import discord
 from discord.ext import commands
 from utils.embed import EmbedFactory  # pylint: disable=import-error
-from utils.extended.cog import ExtendedCog  # pylint: disable=import-error
+from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.info import get_module_info  # pylint: disable=import-error
 from utils.regexp import pascal_to_words  # pylint: disable=import-error
 
@@ -33,6 +34,10 @@ class Help(ExtendedCog):
                     "me": ctx.me,
                     "guild": ctx.guild,
                     "prefix": ctx.prefix,
+                    "invite_url": discord.utils.oauth_url(
+                        os.environ["BOT_TOKEN"],
+                        permissions=discord.Permissions(permissions=8),
+                    ),
                 },
             )
             return await ctx.send(embed=embed)
@@ -65,6 +70,7 @@ class Help(ExtendedCog):
                                 "description",
                                 "No description provided for this module.",
                             ),
+                            "inline": True,
                         }
                         for name, cog in self.bot.cogs.items()
                         if not cog.hidden
@@ -93,6 +99,13 @@ class Help(ExtendedCog):
             embed=EmbedFactory(
                 {
                     **self.command_info["embed"],
+                    "description": self.command_info["embed"].get("description", "")
+                    + f"\n{cog.module_info.get('guide', '')}"
+                    + (
+                        "To get more information about a specific command, run `{prefix}command [command_name]`"
+                        if cog.commands_info
+                        else ""
+                    ),
                     "fields": [
                         {
                             "name": f"`{ctx.prefix}{command.qualified_name}`",
@@ -159,8 +172,6 @@ class Help(ExtendedCog):
 
     async def cog_command_error(self, ctx, error):
         error_command_string = f"{ctx.prefix}{ctx.invoked_with}"
-        print(error)
-        print(error.args)
         await ctx.send(
             embed=EmbedFactory(
                 {"description": error.args[0]},
