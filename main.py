@@ -6,8 +6,8 @@ import discord
 from dotenv import load_dotenv
 
 from client import Client
-from utils.logger import init_discord_log, init_error_log
 from firecord import firecord
+from utils.logger import init_discord_log, init_error_log
 
 
 def main():

@@ -1,8 +1,9 @@
 import logging
+import os
 
 discord_logger = None
 
-
+# discord log may be nonfunctional
 def init_discord_log():
     global discord_logger
     if discord_logger is None:
@@ -27,3 +28,5 @@ def init_error_log():
             filename="logs/errors.log",
             format="%(asctime)s:%(levelname)s:%(name)s: %(message)s",
         )
+        if not os.environ["DEV"]:
+            error_logger.setLevel(logging.WARNING)

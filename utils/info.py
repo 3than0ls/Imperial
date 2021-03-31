@@ -1,6 +1,6 @@
+import inspect
 import json
 import os
-import inspect
 
 cache = {}
 

@@ -1,5 +1,6 @@
-from discord import Embed
 import random
+
+from discord import Embed
 
 
 class EmbedFactory(Embed):

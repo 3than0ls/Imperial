@@ -1,8 +1,9 @@
-import json
 import inspect
+import json
 import os
 
 from discord.ext import commands
+
 from utils.info import get_module_info  # pylint: disable=import-error
 
 

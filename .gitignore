@@ -1,10 +1,13 @@
+# Firebase key
+firebase.json
+
+# Output logs
+logs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Firebase key
-firebase.json
 
 # C extensions
 *.so

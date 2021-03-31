@@ -7,6 +7,7 @@ import time
 from discord.ext import commands
 
 from cogs import cogs_list
+from firecord import DEFAULT_CONFIG, firecord
 
 
 class Client(commands.Bot):
@@ -17,7 +18,9 @@ class Client(commands.Bot):
         self.help_command = None
 
     def __prefix(self, bot, message):
-        return os.environ["PREFIX"]
+        return firecord.prefix_map.get(
+            str(message.guild.id), DEFAULT_CONFIG.get("prefix", ">")
+        )
 
     def start_bot(self):
         for cog_path in cogs_list():

@@ -2,11 +2,11 @@ import pathlib
 
 import discord
 from discord.ext import commands
-from utils.embed import EmbedFactory  # pylint: disable=import-error
+from firecord import firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
+from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.info import get_module_info  # pylint: disable=import-error
 from utils.regexp import pascal_to_words  # pylint: disable=import-error
-from firecord import firecord  # pylint: disable=import-error
 
 
 class Settings(ExtendedCog):
@@ -15,7 +15,7 @@ class Settings(ExtendedCog):
 
     @ExtendedCog.listener(name="on_guild_join")
     async def on_guild_join(self, guild):
-        firecord.init_guild(guild.id)
+        firecord.init_guild(str(guild.id))
 
         # try to find a general/chat channel, and invoke help command there.
         if channel := discord.utils.find(
@@ -27,6 +27,14 @@ class Settings(ExtendedCog):
             )
             help_command = self.bot.get_command("help")
             await ctx.invoke(help_command)
+
+    @ExtendedCog.listener(name="on_message")
+    async def on_message(self, message):
+        print(firecord.prefix_map)
+        ctx = await self.bot.get_context(message)
+        if message.content == "change":
+            firecord.set_guild_data(str(ctx.guild.id), {"prefix": "<"})
+            await ctx.send("changed!")
 
     # async def cog_command_error(self, ctx, error):
     #     error_command_string = f"{ctx.prefix}{ctx.invoked_with}"
