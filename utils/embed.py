@@ -9,8 +9,13 @@ class EmbedFactory(Embed):
     def __new__(
         cls, data, formatting_data=None, error=False, error_command_string=None
     ):
-        if hasattr(data, "color") and data["color"] == "random":
-            data["color"] = random.randint(0, 16777215)
+        if "color" in data:
+            if data["color"] == "random":
+                data["color"] = random.randint(0, 16777215)
+            elif data["color"] == "success":
+                data["color"] = 7208711
+            elif data["color"] == "error":
+                data["color"] = 16715054
 
         if error:
             if not hasattr(data, "color"):

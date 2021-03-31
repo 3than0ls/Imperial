@@ -80,7 +80,6 @@ class Firecord:
         ref.update(new_values)
 
         if "prefix" in new_values:
-            print("changing to", new_values["prefix"])
             self.update_prefix_map(guild_id, new_values["prefix"])
 
         # return new values from new snapshot

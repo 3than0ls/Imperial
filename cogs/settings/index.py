@@ -5,8 +5,7 @@ from discord.ext import commands
 from firecord import firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
-from utils.info import get_module_info  # pylint: disable=import-error
-from utils.regexp import pascal_to_words  # pylint: disable=import-error
+from utils.regexp import pascal_to_words, word_to_pascal  # pylint: disable=import-error
 
 
 class Settings(ExtendedCog):
@@ -28,13 +27,70 @@ class Settings(ExtendedCog):
             help_command = self.bot.get_command("help")
             await ctx.invoke(help_command)
 
-    @ExtendedCog.listener(name="on_message")
-    async def on_message(self, message):
-        print(firecord.prefix_map)
-        ctx = await self.bot.get_context(message)
-        if message.content == "change":
-            firecord.set_guild_data(str(ctx.guild.id), {"prefix": "<"})
-            await ctx.send("changed!")
+    @commands.group(
+        aliases=["setting", "config", "configuration", "env"],
+        case_insensitive=True,
+    )
+    async def settings(self, ctx):
+        if ctx.subcommand_passed is None:
+            guild_id = str(ctx.guild.id)
+            guild_data = firecord.get_guild_data(guild_id)
+            await ctx.send(
+                embed=EmbedFactory(
+                    self.command_info["embed"],
+                    formatting_data={"guild": ctx.guild, "prefix": ctx.prefix},
+                )
+            )
+
+    @settings.command(require_var_positional=True)
+    async def info(self, ctx, *, setting_name):
+        setting_name = setting_name.lower()
+        settings_list = self.module_info["settings"]
+        if setting_name not in settings_list:
+            raise commands.BadArgument(
+                self.commands_info["settings"]["errors"]["BadArgument"].format(
+                    setting_name=setting_name
+                )
+            )
+
+        await ctx.send(
+            embed=EmbedFactory(
+                settings_list[setting_name],
+                formatting_data={
+                    "setting_name": pascal_to_words(setting_name).title(),
+                    "prefix": ctx.prefix,
+                },
+            )
+        )
+
+    @settings.command(require_var_positional=True)
+    async def set(self, ctx, setting_name, *, value):
+        setting_name = setting_name.lower()
+        settings_list = self.module_info["settings"]
+        if setting_name not in settings_list:
+            raise commands.BadArgument(
+                self.commands_info["settings"]["errors"]["BadArgument"].format(
+                    setting_name=setting_name
+                )
+            )
+
+        if not (len(value) > 0 and len(value) <= 5):
+            raise discord.InvalidArgument(
+                self.commands_info["settings"]["subcommands"]["set"]["errors"][
+                    "BadArgument"
+                ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
+            )
+
+        firecord.set_guild_data(str(ctx.guild.id), {"prefix": value})
+        await ctx.send(
+            embed=EmbedFactory(
+                self.commands_info["settings"]["subcommands"]["set"]["embed"],  # messy
+                formatting_data={
+                    "setting_name": setting_name,
+                    "value": value,
+                },
+            )
+        )
 
     # async def cog_command_error(self, ctx, error):
     #     error_command_string = f"{ctx.prefix}{ctx.invoked_with}"

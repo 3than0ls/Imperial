@@ -80,7 +80,8 @@ class Help(ExtendedCog):
         )
 
     @commands.command(
-        aliases=["module_info", "cog", "cog_info"], require_var_positional=True
+        aliases=["module_info", "cog", "cog_info", "commands"],
+        require_var_positional=True,
     )
     async def module(self, ctx, module_name: str):
         parsed_module_name = "".join(
