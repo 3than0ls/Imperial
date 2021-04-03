@@ -1,15 +1,21 @@
 {
     "name": "Settings",
-    "description": "View and change bot configurations.\n",
+    "description": "View and change bot configurations.",
     "commands": {
         "settings": {
+            "description": "Get and set bot configuration settings like prefix using subcommands `info` and `set`.",
             "embed": {
                 "title": "Bot Settings",
                 "description": "Below are my settings for the server **{guild.name}** ({guild.id}).\nRun `{prefix}settings info [setting]` to get more information about a setting.\nRun `{prefix}settings set [setting] [new_setting]` to change a setting.",
                 "fields": [
                     {
                         "name": ":grey_exclamation: Prefix",
-                        "value": "Current prefix: `{prefix}`\n`{prefix}settings info prefix`.",
+                        "value": "Current prefix: `{guild_data[prefix]}`\n`{prefix}settings info prefix`.",
+                        "inline": true
+                    },
+                    {
+                        "name": ":speaking_head:  Nickname",
+                        "value": "Current nickname: `{guild_data[nickname]}`\n`{prefix}settings info nickname`.",
                         "inline": true
                     }
                 ]
@@ -20,21 +26,26 @@
             "subcommands": {
                 "set": {
                     "embed": {
-                        "description": ":white_check_mark:  Successfully updated {setting_name} to `{value}`.",
+                        "description": ":white_check_mark:   Successfully updated {setting_name} to `{value}`.",
                         "color": "success"
                     },
                     "errors": {
                         "InvalidArgument": "\"{value}\" is not a valid value. To learn about valid values for {setting_name}, run `{prefix}settings info {setting_name}`."
                     }
                 },
-                "info": {},
+                "info": {
+                    "embed": {
+                        "title": "Settings: {setting[name]}",
+                        "description": "{setting[description]}"
+                    }
+                },
                 "errors": {}
             }
         }
     },
     "settings": {
         "prefix": {
-            "title": "Settings: {setting_name}",
+            "name": "Prefix",
             "description": "The command prefix is what the message content must start with to have a command invoked. It cannot be an empty string (it cannot be nothing).",
             "fields": [
                 {
@@ -43,11 +54,29 @@
                 },
                 {
                     "name": "Current Setting Value",
-                    "value": "Current prefix: `{prefix}`."
+                    "value": "Current prefix: `{guild_data[prefix]}`."
                 },
                 {
                     "name": "Update This Setting",
                     "value": "Change prefix by using: `{prefix}settings set prefix [value]`."
+                }
+            ]
+        },
+        "nickname": {
+            "name": "Nickname",
+            "description": "The bot nickname for this server.",
+            "fields": [
+                {
+                    "name": "Settings Type",
+                    "value": "String - Has to be 1 to 32 characters long."
+                },
+                {
+                    "name": "Current Setting Value",
+                    "value": "Current nickname: `{guild_data[nickname]}`."
+                },
+                {
+                    "name": "Update This Setting",
+                    "value": "Change nickname by using: `{prefix}settings set nickname [value]`."
                 }
             ]
         }

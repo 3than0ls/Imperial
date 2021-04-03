@@ -89,5 +89,24 @@ class Firecord:
         """reset the guild data collection to default config. An alias for init_guild as they do the exact same thing."""
         return self.init_guild(guild_id)
 
+    # --------- FIRESTORE INTERACTION METHODS -------------
+    def create_new_setting(self):
+        """used for adding a new setting in DEFAULT_CONFIG to all of the guilds in database"""
+        # returns a generator of documents in the guilds collection
+        transaction = self.firestore.transaction()
+
+        # pylint: disable=no-member
+        @firestore.transactional
+        def add_setting(transaction, guild_documents):
+            # guilds = transaction.get_all(guild_documents)
+            for guild in guild_documents:
+                guild_data = guild.get(transaction=transaction).to_dict()
+                # DEFAULT_CONFIG should contain the new updated settings with the new setting
+                # keep in mind that it creates new ones, but doesn't delete old ones that are in firestore but not in DEFAULT_CONFIG
+                new_settings = {**DEFAULT_CONFIG, **guild_data}
+                transaction.set(guild, new_settings)
+
+        add_setting(transaction, self.firestore.collection("guilds").list_documents())
+
 
 firecord = Firecord()

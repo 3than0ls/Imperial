@@ -59,7 +59,7 @@
                 "description": "{module[description]}"
             },
             "errors": {
-                "BadArgument": "Argument \"{module_name}\" is not an existing or visible module. Did you make sure to replace spaces with underscores?"
+                "BadArgument": "Parameter \"{module_name}\" is not an existing or visible module. Did you make sure to replace spaces with underscores?"
             }
         },
         "command": {

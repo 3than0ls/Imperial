@@ -32,20 +32,13 @@ class Client(commands.Bot):
             f"{self.user} is connected and ready active on time: {datetime.datetime.now()}"
         )
 
-    async def test_on_message(self, message):
-        ctx = await self.get_context(message)
-
-        if message.content == f"<@!{self.user.id}>":
-            await ctx.send("pogchamp")
-
-        if ctx.guild is None:
-            return await ctx.send("Cannot work in DMs")
-
     async def on_message(self, message):
         # maybe move below to a decorator check
         if message.author.id == self.user.id:
             return
 
-        await self.test_on_message(message)
+        ctx = await self.get_context(message)
+        if ctx.guild is None:
+            return await ctx.send("Cannot work in DMs")
 
         await self.process_commands(message)

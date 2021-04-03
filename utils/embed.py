@@ -46,13 +46,12 @@ class EmbedFactory(Embed):
             ):  # for embed fields list, iterate through and format
                 formatted_embed_fields = []
                 for embed_field in value:
-                    formatted_embed_field = {}
-                    formatted_embed_field["name"] = embed_field["name"].format(**kwargs)
-                    formatted_embed_field["value"] = embed_field["value"].format(
-                        **kwargs
-                    )
                     formatted_embed_fields.append(
-                        {**embed_field, **formatted_embed_field}
+                        {
+                            "name": embed_field["name"].format(**kwargs),
+                            "value": embed_field["value"].format(**kwargs),
+                            "inline": embed_field.get("inline", False),
+                        }
                     )
                 formatted_data[key] = formatted_embed_fields
             elif isinstance(value, str):  # for strings, just format

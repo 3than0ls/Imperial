@@ -7,6 +7,7 @@ from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.info import get_module_info  # pylint: disable=import-error
 from utils.regexp import pascal_to_words  # pylint: disable=import-error
+from firecord import firecord  # pylint: disable=import-error
 
 
 class Help(ExtendedCog):
@@ -33,7 +34,7 @@ class Help(ExtendedCog):
                 formatting_data={
                     "me": ctx.me,
                     "guild": ctx.guild,
-                    "prefix": ctx.prefix,
+                    "prefix": ctx.prefix or firecord.prefix_map[str(ctx.guild.id)],
                     "invite_url": discord.utils.oauth_url(
                         os.environ["BOT_TOKEN"],
                         permissions=discord.Permissions(permissions=8),
