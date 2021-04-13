@@ -53,22 +53,38 @@ class ErrorHandler(ExtendedCog):
                 pass
 
         else:
-            # All other Errors not returned come here. And we can just print the default TraceBack.
-            logging.error(error)
-            print(
-                "Ignoring exception in command {}:".format(ctx.command), file=sys.stderr
-            )
-            embed = EmbedFactory(
-                {
-                    "title": ":x: An unmanaged error has occured",
-                    "description": f"**Ignoring exception in command `{ctx.command}`**\n```py\n{''.join(traceback.format_exception(type(error), error, error.__traceback__))}```",
-                },
-                error=True,
-            )
-            await ctx.send(embed=embed)
-            traceback.print_exception(
-                type(error), error, error.__traceback__, file=sys.stderr
-            )
+            error_command_string = f"{ctx.prefix}{ctx.invoked_with}"
+
+            command_name = ctx.command.root_parent.name or ctx.command.name
+            command_info = ctx.cog.commands_info.get(command_name, {})
+
+            if type(error).__name__ in command_info.get("errors", {}):
+                await ctx.send(
+                    embed=EmbedFactory(
+                        {"description": error.args[0]},
+                        error=True,
+                        error_command_string=error_command_string,
+                    )
+                )
+            else:
+
+                # All other Errors not returned come here. And we can just print the default TraceBack.
+                logging.error(error)
+                print(
+                    "Ignoring exception in command {}:".format(ctx.command),
+                    file=sys.stderr,
+                )
+                embed = EmbedFactory(
+                    {
+                        "title": ":x: An unmanaged error has occured",
+                        "description": f"**Ignoring exception in command `{ctx.command}`**\n```py\n{''.join(traceback.format_exception(type(error), error, error.__traceback__))}```",
+                    },
+                    error=True,
+                )
+                await ctx.send(embed=embed)
+                traceback.print_exception(
+                    type(error), error, error.__traceback__, file=sys.stderr
+                )
 
 
 def setup(bot):

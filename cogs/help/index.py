@@ -172,16 +172,6 @@ class Help(ExtendedCog):
             )
         )
 
-    async def cog_command_error(self, ctx, error):
-        error_command_string = f"{ctx.prefix}{ctx.invoked_with}"
-        await ctx.send(
-            embed=EmbedFactory(
-                {"description": error.args[0]},
-                error=True,
-                error_command_string=error_command_string,
-            )
-        )
-
 
 def setup(bot):
     bot.add_cog(Help(bot))

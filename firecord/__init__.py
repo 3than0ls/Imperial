@@ -46,7 +46,7 @@ class Firecord:
         self.prefix_map[guild_id] = new_prefix
         return self.prefix_map
 
-    # --------- GUILD RELATED METHODS ---------
+    # --------- SINGLE GUILD RELATED METHODS ---------
     def init_guild(self, guild_id: str):
         """simply create a document in the database with the default config. returns the default config"""
         snapshot = self.firestore.document(f"guilds/{guild_id}")
@@ -88,6 +88,11 @@ class Firecord:
     def reset_guild_data(self, guild_id: str) -> dict:
         """reset the guild data collection to default config. An alias for init_guild as they do the exact same thing."""
         return self.init_guild(guild_id)
+
+    # --------- MULTI GUILD RELATED METHODS ---------
+    def update_new_guild_settings(self):
+        """update all guild settings using DEFAULT_SETTINGS"""
+        setting_keys = DEFAULT_CONFIG.keys()
 
     # --------- FIRESTORE INTERACTION METHODS -------------
     def create_new_setting(self):

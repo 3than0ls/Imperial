@@ -39,7 +39,12 @@
                         "description": "{setting[description]}"
                     }
                 },
-                "errors": {}
+                "reset": {
+                    "embed": {
+                        "title": "Settings: {setting[name]}",
+                        "description": "{setting[description]}"
+                    }
+                }
             }
         }
     },
