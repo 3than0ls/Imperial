@@ -1,4 +1,5 @@
 {
     "prefix": ">",
-    "nickname": "Imperial"
+    "nickname": "Imperial",
+    "security": "admin"
 }

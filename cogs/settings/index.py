@@ -7,6 +7,7 @@ from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.regexp import pascal_to_words, word_to_pascal  # pylint: disable=import-error
 from cogs.settings.validate import validation_rules  # pylint: disable=import-error
+from checks.has_access import has_access  # pylint: disable=import-error
 
 
 class Settings(ExtendedCog):
@@ -87,6 +88,7 @@ class Settings(ExtendedCog):
             )
         )
 
+    @has_access()
     @settings.command(require_var_positional=True)
     async def set(self, ctx, setting_name, *, value):
         setting_name = self.check_settings_exists(setting_name)
@@ -110,6 +112,7 @@ class Settings(ExtendedCog):
             )
         )
 
+    @has_access()
     @settings.command(require_var_positional=True)
     async def reset(self, ctx, *, setting_name):
         setting_name, _ = self.check_settings_exists(setting_name)

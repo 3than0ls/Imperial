@@ -17,6 +17,11 @@
                         "name": ":speaking_head:  Nickname",
                         "value": "Current nickname: `{guild_data[nickname]}`\n`{prefix}settings info nickname`.",
                         "inline": true
+                    },
+                    {
+                        "name": ":shield:  Security Level",
+                        "value": "Current security level: `{guild_data[security]}`\n`{prefix}settings info security`.",
+                        "inline": true
                     }
                 ]
             },
@@ -82,6 +87,24 @@
                 {
                     "name": "Update This Setting",
                     "value": "Change nickname by using: `{prefix}settings set nickname [value]`."
+                }
+            ]
+        },
+        "security": {
+            "name": "Bot Security Level",
+            "description": "The type of permission required to access certain commands of this bot.",
+            "fields": [
+                {
+                    "name": "Settings Type",
+                    "value": "String - Has to be one of the following:\n - `none` (anyone can access all bot commands, not reccomended)\n -  `server_manager` (only members with the server manager permission can use)\n -  `admin` (only server administrators)\n -  `owner` (only server owner can use)."
+                },
+                {
+                    "name": "Current Setting Value",
+                    "value": "Current security level: `{guild_data[security]}`."
+                },
+                {
+                    "name": "Update This Setting",
+                    "value": "Change security level by using: `{prefix}settings set security [value]`."
                 }
             ]
         }

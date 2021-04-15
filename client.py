@@ -5,6 +5,7 @@ import sys
 import time
 
 from discord.ext import commands
+import discord
 
 from cogs import cogs_list
 from firecord import DEFAULT_CONFIG, firecord
