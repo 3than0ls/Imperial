@@ -4,8 +4,8 @@ import os
 import sys
 import time
 
-from discord.ext import commands
 import discord
+from discord.ext import commands
 
 from cogs import cogs_list
 from firecord import DEFAULT_CONFIG, firecord

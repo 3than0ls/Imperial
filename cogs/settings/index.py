@@ -1,13 +1,13 @@
 import pathlib
 
 import discord
+from checks.has_access import has_access  # pylint: disable=import-error
+from cogs.settings.validate import validation_rules  # pylint: disable=import-error
 from discord.ext import commands
-from firecord import firecord, DEFAULT_CONFIG  # pylint: disable=import-error
+from firecord import DEFAULT_CONFIG, firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.regexp import pascal_to_words, word_to_pascal  # pylint: disable=import-error
-from cogs.settings.validate import validation_rules  # pylint: disable=import-error
-from checks.has_access import has_access  # pylint: disable=import-error
 
 
 class Settings(ExtendedCog):

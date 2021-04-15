@@ -1,5 +1,5 @@
 from discord.ext import commands
-from firecord import firecord, DEFAULT_CONFIG  # pylint: disable=import-error
+from firecord import DEFAULT_CONFIG, firecord  # pylint: disable=import-error
 
 
 def has_access():
@@ -8,8 +8,7 @@ def has_access():
 
         # if the author is bot owner, allow access
         if ctx.author.id == (await ctx.bot.application_info()).owner.id:
-            print("is owner")
-            return False
+            return True
 
         if guild_settings["security"] == "none":
             return True
