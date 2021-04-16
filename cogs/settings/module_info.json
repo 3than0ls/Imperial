@@ -14,11 +14,6 @@
                         "inline": true
                     },
                     {
-                        "name": ":speaking_head:  Nickname",
-                        "value": "Current nickname: `{guild_data[nickname]}`\n`{prefix}settings info nickname`.",
-                        "inline": true
-                    },
-                    {
                         "name": ":shield:  Security Level",
                         "value": "Current security level: `{guild_data[security]}`\n`{prefix}settings info security`.",
                         "inline": true
@@ -69,24 +64,6 @@
                 {
                     "name": "Update This Setting",
                     "value": "Change prefix by using: `{prefix}settings set prefix [value]`."
-                }
-            ]
-        },
-        "nickname": {
-            "name": "Nickname",
-            "description": "The bot nickname for this server.",
-            "fields": [
-                {
-                    "name": "Settings Type",
-                    "value": "String - Has to be 1 to 32 characters long."
-                },
-                {
-                    "name": "Current Setting Value",
-                    "value": "Current nickname: `{guild_data[nickname]}`."
-                },
-                {
-                    "name": "Update This Setting",
-                    "value": "Change nickname by using: `{prefix}settings set nickname [value]`."
                 }
             ]
         },

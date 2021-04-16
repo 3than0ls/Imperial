@@ -29,17 +29,6 @@ class Settings(ExtendedCog):
             help_command = self.bot.get_command("help")
             await ctx.invoke(help_command)
 
-    @ExtendedCog.listener(name="on_ready")
-    async def on_ready(self):
-        # loop through every guild and if nickname was changed while bot could not detect on_nickname_change event, set it in backend
-        pass
-
-    @ExtendedCog.listener(name="on_member_update")
-    async def on_member_update(self, before, after):
-        if before.nick != after.nick:
-            guild_id = str(after.guild.id)
-            firecord.set_guild_data(guild_id, {"nickname": after.nick})
-
     def check_settings_exists(self, setting_name):
         setting_name = setting_name.lower()
         settings_list = self.module_info["settings"]
@@ -91,17 +80,17 @@ class Settings(ExtendedCog):
     @has_access()
     @settings.command(require_var_positional=True)
     async def set(self, ctx, setting_name, *, value):
-        setting_name = self.check_settings_exists(setting_name)
+        setting_name, _ = self.check_settings_exists(setting_name)
 
         # validate user input
-        if not validation_rules[setting_name]:
+        if not validation_rules[setting_name](value):
             raise discord.InvalidArgument(
                 self.commands_info["settings"]["subcommands"]["set"]["errors"][
-                    "BadArgument"
+                    "InvalidArgument"
                 ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
             )
 
-        firecord.set_guild_data(str(ctx.guild.id), {"prefix": value})
+        firecord.set_guild_data(str(ctx.guild.id), {setting_name: value})
         await ctx.send(
             embed=EmbedFactory(
                 self.commands_info["settings"]["subcommands"]["set"]["embed"],  # messy

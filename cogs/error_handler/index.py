@@ -52,13 +52,27 @@ class ErrorHandler(ExtendedCog):
             except discord.HTTPException:
                 pass
 
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send(
+                embed=EmbedFactory(
+                    {
+                        "description": f":warning: You don't have access to this command (`{ctx.command.name}`)! If this is a mistake, check the bot security level and ask a member with bot access to change this."
+                    },
+                    error=True,
+                    error_command_string=ctx.invoked_with,
+                )
+            )
+
         else:
             error_command_string = f"{ctx.prefix}{ctx.invoked_with}"
 
             command_name = ctx.command.root_parent.name or ctx.command.name
             command_info = ctx.cog.commands_info.get(command_name, {})
 
-            if type(error).__name__ in command_info.get("errors", {}):
+            if (
+                type(error).__name__ in command_info.get("errors", {})
+                or ctx.command.parents
+            ):
                 await ctx.send(
                     embed=EmbedFactory(
                         {"description": error.args[0]},
@@ -67,7 +81,6 @@ class ErrorHandler(ExtendedCog):
                     )
                 )
             else:
-
                 # All other Errors not returned come here. And we can just print the default TraceBack.
                 logging.error(error)
                 print(
@@ -76,7 +89,6 @@ class ErrorHandler(ExtendedCog):
                 )
                 embed = EmbedFactory(
                     {
-                        "title": ":x: An unmanaged error has occured",
                         "description": f"**Ignoring exception in command `{ctx.command}`**\n```py\n{''.join(traceback.format_exception(type(error), error, error.__traceback__))}```",
                     },
                     error=True,

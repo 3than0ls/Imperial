@@ -24,7 +24,7 @@ class EmbedFactory(Embed):
                 data["title"] = (
                     "An Error has occured."
                     if error_command_string is None
-                    else f"An Error occured attempting to run `{error_command_string}`"
+                    else f"An error occured attempting to run `{error_command_string}`"
                 )
 
         if formatting_data:
