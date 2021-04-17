@@ -12,6 +12,8 @@ python-dotenv = "*"
 pylint = "*"
 firebase-admin = "*"
 google-cloud-firestore = "*"
+pydictionary = "*"
+udpy = "*"
 
 [requires]
 python_version = "3.8"
