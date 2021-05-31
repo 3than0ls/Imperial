@@ -1,0 +1,54 @@
+{
+    "name": "Define",
+    "description": "Get the definition, synonyms, or Urban Dictionary definition of a word.",
+    "commands": {
+        "define": {
+            "description": "Get the dictionary definition and synonyms of a word.",
+            "params": {
+                "keyword": "Word to look up"
+            },
+            "usage": {
+                "{prefix}define potato": "Returns the definition of the word potato."
+            },
+            "embed": {
+                "title": "Definition of {keyword}",
+                "description": "{definition}",
+                "fields": [
+                    {
+                        "name": "Synonyms",
+                        "value": "{synonyms}"
+                    },
+                    {
+                        "name": "Antonyms",
+                        "value": "{antonyms}"
+                    }
+                ]
+            },
+            "errors": {
+                "BadArgument": "\"{keyword}\" was not found in the dictionary."
+            }
+        },
+        "urban": {
+            "description": "Get the [Urban Dictionary](https://www.urbandictionary.com/) definition and synonyms of a word.",
+            "params": {
+                "keyword": "Word to look up"
+            },
+            "usage": {
+                "{prefix}define potato": "Returns the definition of the word potato."
+            },
+            "embed": {
+                "title": "Urban Dictionary definition of {keyword}",
+                "description": "{definition}",
+                "fields": [
+                    {
+                        "name": "Example",
+                        "value": "{example}"
+                    }
+                ]
+            },
+            "errors": {
+                "BadArgument": "\"{keyword}\" was not found in the Urban Dictionary."
+            }
+        }
+    }
+}

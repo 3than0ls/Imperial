@@ -66,7 +66,9 @@ class ErrorHandler(ExtendedCog):
         else:
             error_command_string = f"{ctx.prefix}{ctx.invoked_with}"
 
-            command_name = ctx.command.root_parent.name or ctx.command.name
+            command_name = (
+                getattr(ctx.command, "root_parent", None) and ctx.root_parent.name
+            ) or ctx.command.name
             command_info = ctx.cog.commands_info.get(command_name, {})
 
             if (
