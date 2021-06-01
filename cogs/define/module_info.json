@@ -25,7 +25,8 @@
                 ]
             },
             "errors": {
-                "BadArgument": "\"{keyword}\" was not found in the dictionary."
+                "BadArgument": "\"{keyword}\" was not found in the dictionary.",
+                "MissingWord": "You need to specify a word or term to look up."
             }
         },
         "urban": {
@@ -47,7 +48,8 @@
                 ]
             },
             "errors": {
-                "BadArgument": "\"{keyword}\" was not found in the Urban Dictionary."
+                "BadArgument": "\"{keyword}\" was not found in the Urban Dictionary.",
+                "MissingWord": "You need to specify a word or term to look up."
             }
         }
     }

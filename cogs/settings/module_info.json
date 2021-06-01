@@ -26,7 +26,7 @@
             "subcommands": {
                 "set": {
                     "embed": {
-                        "description": ":white_check_mark:   Successfully updated {setting_name} to `{value}`.",
+                        "description": ":white_check_mark:   Successfully updated **{setting_name}** to `{value}`.",
                         "color": "success"
                     },
                     "errors": {
@@ -41,8 +41,8 @@
                 },
                 "reset": {
                     "embed": {
-                        "title": "Settings: {setting[name]}",
-                        "description": "{setting[description]}"
+                        "description": ":white_check_mark:   Successfully reset **{setting_name}** to `{value}`.",
+                        "color": "success"
                     }
                 }
             }

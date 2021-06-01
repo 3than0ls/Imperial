@@ -1,0 +1,46 @@
+{
+    "name": "Profile",
+    "description": "Conveiently create and assign a group of roles, or a Profile, to server members.",
+    "commands": {
+        "profile": {
+            "description": "Conveniently create, assign, and update Profiles (groups of roles). Profiles are not stored on the server or on Discord, but rather on the bot.\nTo view more information, run `{prefix}profile`.",
+            "embed": {
+                "title": "Profiles",
+                "description": "Profiles are server specific groups of roles that you can create and assign to member. This makes it more convenient when assigning multiple roles to users that frequently have roles removed or changed, or useres that leave or are kicked but rejoin often.",
+                "fields": [
+                    {
+                        "name": "**Create profiles: `{prefix}profile create [profile_name] [members/roles]`**",
+                        "value": "Create profiles by specifying a name, then a source of roles, such as a member, multiple roles, or a combination of both. If you create a profile using an already existing name, the new profile will overwrite the old one. Roles and members can be referenced through ID or through their case specific names.\nExample:\n`{prefix}profile create test @role1 @role2`, creates a profile called `test` containing the roles `role1` and `role2`.",
+                        "inline": false
+                    },
+                    {
+                        "name": "**Update profiles: `{prefix}profile update [profile_name] [members/roles]`**",
+                        "value": "Add roles in profiles by specifying the name of a pre-existing profile and a source of new roles, such as a member, multiple roles, or a combination of both. If you are looking to overwrite an already existing profile, use `{prefix}profile create` instead.\nExample:\n`{prefix}profile update test @role1`, updates the pre-existing profile `test` by adding the role `role1` to it.",
+                        "inline": false
+                    },
+                    {
+                        "name": "**Delete profiles**",
+                        "value": "delete profile text",
+                        "inline": false
+                    },
+                    {
+                        "name": "**List all profiles**",
+                        "value": "list all profile text",
+                        "inline": false
+                    }
+                ]
+            },
+            "subcommands": {
+                "create": {
+                    "embed": {
+                        "description": ":white_check_mark:   Successfully created profile **{profile_name}** containing the role(s) {roles}.\n\nRoles managed by Discord or server integrations such as the Nitro Booster or Bot roles are not included in profile.\n\nTo assign this profile, run `{prefix}profile assign {profile_name} [*members]`",
+                        "color": "success"
+                    },
+                    "errors": {
+                        
+                    }
+                }
+            }
+        }
+    }
+}

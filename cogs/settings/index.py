@@ -1,5 +1,3 @@
-import pathlib
-
 import discord
 from checks.has_access import has_access  # pylint: disable=import-error
 from cogs.settings.validate import validation_rules  # pylint: disable=import-error
@@ -7,7 +5,6 @@ from discord.ext import commands
 from firecord import DEFAULT_CONFIG, firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
-from utils.regexp import pascal_to_words, word_to_pascal  # pylint: disable=import-error
 
 
 class Settings(ExtendedCog):
@@ -111,7 +108,9 @@ class Settings(ExtendedCog):
         )
         await ctx.send(
             embed=EmbedFactory(
-                self.commands_info["settings"]["subcommands"]["set"]["embed"],  # messy
+                self.commands_info["settings"]["subcommands"]["reset"][
+                    "embed"
+                ],  # messy
                 formatting_data={
                     "setting_name": setting_name,
                     "value": DEFAULT_CONFIG[setting_name],

@@ -62,14 +62,25 @@ class ErrorHandler(ExtendedCog):
                     error_command_string=ctx.invoked_with,
                 )
             )
-
         else:
             error_command_string = f"{ctx.prefix}{ctx.invoked_with}"
 
             command_name = (
-                getattr(ctx.command, "root_parent", None) and ctx.root_parent.name
+                getattr(ctx.command, "root_parent", None)
+                and f"{ctx.command.root_parent.name} {ctx.command.name}"
             ) or ctx.command.name
             command_info = ctx.cog.commands_info.get(command_name, {})
+
+            if isinstance(error, commands.MissingRequiredArgument):
+                return await ctx.send(
+                    embed=EmbedFactory(
+                        {
+                            "description": f"**`{error.param.name}`** is a required argument that is missing."
+                        },
+                        error=True,
+                        error_command_string=error_command_string,
+                    )
+                )
 
             if (
                 type(error).__name__ in command_info.get("errors", {})

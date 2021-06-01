@@ -23,6 +23,8 @@ class Define(ExtendedCog):
     )
     async def define(self, ctx, *keyword: str):
         keyword = " ".join(keyword)
+        if not keyword:
+            raise commands.BadArgument(self.command_info["errors"]["MissingWord"])
 
         async with ctx.channel.typing():
             definition = dictionary_define(keyword)
@@ -53,6 +55,8 @@ class Define(ExtendedCog):
     @commands.command(aliases=["urban_dictionary", "urban_define"])
     async def urban(self, ctx, *keyword: str):
         keyword = " ".join(keyword)
+        if not keyword:
+            raise commands.BadArgument(self.command_info["errors"]["MissingWord"])
 
         async with ctx.channel.typing():
             definition = urban_define(keyword)

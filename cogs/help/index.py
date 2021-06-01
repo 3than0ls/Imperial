@@ -43,6 +43,7 @@ class Help(ExtendedCog):
             )
             return await ctx.send(embed=embed)
 
+        # if keyword is not none, attempt to invoke the help command with keyword as a module name or command name
         try:
             return await ctx.invoke(self.module, module_name=keyword)
         except:
