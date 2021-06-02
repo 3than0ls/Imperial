@@ -16,6 +16,8 @@ class EmbedFactory(Embed):
                 data["color"] = 7208711
             elif data["color"] == "error":
                 data["color"] = 16715054
+            elif data["color"] == "confirm":
+                data["color"] = 15329284
 
         if error:
             if not hasattr(data, "color"):

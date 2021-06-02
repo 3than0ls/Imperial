@@ -4,6 +4,7 @@ from cogs.profile.helper import convert_to_roles  # pylint: disable=import-error
 from firecord import firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
+from utils.confirm import confirm  # pylint: disable=import-error
 
 # move Profile storage to backend
 # possibly link member id(s?) to a profile, and when an update_all_profiles is called, all profiles are update to be whatever the roles of the current member is
@@ -45,13 +46,21 @@ class Profile(ExtendedCog):
                 )
             )
 
+        if firecord.profile_exists(str(ctx.guild.id), profile_name) and await confirm(
+            ctx,
+            f'The profile "{profile_name}" already exists. Creating a profile with this name will override and replace the old one. Are you sure you want to proceed?',
+        ):
+            pass
+        else:
+            return
+
         # sort the roles by position
         profile_roles = sorted(
             profile_roles, key=lambda role: role.position, reverse=True
         )
 
         firecord.profile_create(
-            ctx.guild.id,
+            str(ctx.guild.id),
             ctx.author.id,
             profile_name,
             [role.id for role in profile_roles],
@@ -67,6 +76,12 @@ class Profile(ExtendedCog):
                 },
             )
         )
+
+    @commands.command()
+    async def testconfirm(self, ctx):
+        print("a")
+        await confirm(ctx, "prompt")
+        print("b")
 
 
 def setup(bot):
