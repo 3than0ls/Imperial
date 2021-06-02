@@ -54,7 +54,7 @@ class Firecord:
         self.update_prefix_map(guild_id)
         return DEFAULT_CONFIG
 
-    def use_guild(self, guild_id: str):
+    def use_guild(self, guild_id: str, get_snapshot: bool = True):
         """return a [DocumentRef, DocumentSnapshot, dict] to be used, and also if the guild id isn't in the database, create it using default settings."""
         ref = self.firestore.document(f"guilds/{guild_id}")
         snapshot = ref.get()
@@ -114,20 +114,28 @@ class Firecord:
         add_setting(transaction, self.firestore.collection("guilds").list_documents())
 
     # --------- GUILD PROFILE METHODS -------------
-    def profile_exists(self, guild_id, profile_name):
+    def profile_exists(self, guild_id: str, profile_name: str):
         ref, *_ = self.use_guild(guild_id)
         return ref.collection("profiles").document(profile_name).get().exists
 
-    def profile_create(self, guild_id, author_id, profile_name, profile_role_ids):
+    def profile_create(self, guild_id: str, author_id, profile_name, profile_role_ids):
         """create a profile in specified guild"""
         ref, *_ = self.use_guild(guild_id)
         ref.collection("profiles").document(profile_name).set(
             {
                 "profile_roles": profile_role_ids,
+                "name": profile_name,
                 "creator": author_id,
                 "created": firestore.SERVER_TIMESTAMP,  # pylint: disable=no-member
             }
         )
+
+    def profile_list(self, guild_id: str):
+        """list all profiles from a guild"""
+        ref, *_ = self.use_guild(guild_id=guild_id)
+        profiles = ref.collection("profiles").get()
+
+        return [profile.to_dict() for profile in profiles]
 
 
 firecord = Firecord()

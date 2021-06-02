@@ -10,12 +10,7 @@
                 "fields": [
                     {
                         "name": "**Create profiles: `{prefix}profile create [profile_name] [members/roles]`**",
-                        "value": "Create profiles by specifying a name, then a source of roles, such as a member, multiple roles, or a combination of both. If you create a profile using an already existing name, the new profile will overwrite the old one. Roles and members can be referenced through ID or through their case specific names.\nExample:\n`{prefix}profile create test @role1 @role2`, creates a profile called `test` containing the roles `role1` and `role2`.",
-                        "inline": false
-                    },
-                    {
-                        "name": "**Update profiles: `{prefix}profile update [profile_name] [members/roles]`**",
-                        "value": "Add roles in profiles by specifying the name of a pre-existing profile and a source of new roles, such as a member, multiple roles, or a combination of both. If you are looking to overwrite an already existing profile, use `{prefix}profile create` instead.\nExample:\n`{prefix}profile update test @role1`, updates the pre-existing profile `test` by adding the role `role1` to it.",
+                        "value": "Profiles can be created from roles, roles from users, or a combination of both. If you create a profile using an already existing name, the new profile will overwrite the old one. Roles and members can be referenced by ID, name, or mention.\n**Example:**\n`{prefix}profile create test @role1 @role2`, creates a profile called `test` containing the roles `role1` and `role2`.",
                         "inline": false
                     },
                     {
@@ -24,8 +19,8 @@
                         "inline": false
                     },
                     {
-                        "name": "**List all profiles**",
-                        "value": "list all profile text",
+                        "name": "**List all profiles `{prefix}profile list`**",
+                        "value": "List all profiles in the server. Can be sorted by appending a `date`/`creator`/`roles` at the end of the command. Does the same thing as `{prefix}profiles`.",
                         "inline": false
                     }
                 ]
@@ -37,10 +32,21 @@
                         "color": "success"
                     },
                     "errors": {
-                        "TooManyRoles": "You are attempting to assign too many roles (**{profile_role_number}**) to a profile. The maximum number of roles you can assign to a profile is **{profile_role_limit}.**"
+                        "TooManyRoles": "You are attempting to assign too many roles (**{profile_role_number}**) to a profile. The maximum number of roles you can assign to a profile is **{profile_role_limit}.**",
+                        "IllegalName": "Profile names cannot be higher than 32 characters or contain the forward slash keyword ('/')."
+                    }
+                },
+                "_list": {
+                    "embed": {
+                        "title": "List of profiles for {server_name}",
+                        "description": "{server_name} has **{profiles_num}** profiles. To change the order you view profiles at, run `{prefix}profile list [created/creator/roles]`.\nFor more information about a profile, run `{prefix}profile info [profile_name]`.",
+                        "fields": {}
                     }
                 }
             }
+        },
+        "profiles": {
+            "description": "Lists profiles in the server. Synonymous to running `{prefix}profile list`."
         }
     }
 }

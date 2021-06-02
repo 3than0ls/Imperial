@@ -65,12 +65,6 @@ class ErrorHandler(ExtendedCog):
         else:
             error_command_string = f'{ctx.prefix}{(getattr(ctx.command, "root_parent", None) and (ctx.command.root_parent.name + " " + ctx.invoked_with)) or ctx.invoked_with}'
 
-            command_name = (
-                getattr(ctx.command, "root_parent", None)
-                and ctx.command.root_parent.name
-            ) or ctx.command.name
-            command_info = ctx.cog.commands_info.get(command_name, {})
-
             if isinstance(error, commands.MissingRequiredArgument):
                 return await ctx.send(
                     embed=EmbedFactory(
@@ -81,8 +75,7 @@ class ErrorHandler(ExtendedCog):
                         error_command_string=error_command_string,
                     )
                 )
-
-            if type(error).__name__ in command_info.get("errors", {}):
+            elif isinstance(error, commands.BadArgument):
                 await ctx.send(
                     embed=EmbedFactory(
                         {"description": error.args[0]},

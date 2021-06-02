@@ -59,5 +59,3 @@ async def confirm(ctx, prompt, timeout=30, color=None):
             ),
         )
     return False
-
-    # edit confirmation message, set color, change embed text, etc.
