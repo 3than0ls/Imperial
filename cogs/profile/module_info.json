@@ -37,7 +37,7 @@
                         "color": "success"
                     },
                     "errors": {
-                        
+                        "TooManyRoles": "You are attempting to assign too many roles (**{profile_role_number}**) to a profile. The maximum number of roles you can assign to a profile is **{profile_role_limit}.**"
                     }
                 }
             }

@@ -1,7 +1,7 @@
-import typing
 import discord
 from discord.ext import commands
 from cogs.profile.helper import convert_to_roles  # pylint: disable=import-error
+from firecord import firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 
@@ -12,6 +12,7 @@ from utils.embed import EmbedFactory  # pylint: disable=import-error
 class Profile(ExtendedCog):
     def __init__(self, bot):
         super().__init__(bot)
+        self.profile_role_limit = 16
 
     @commands.group(aliases=["role_group"])
     async def profile(self, ctx):
@@ -33,19 +34,27 @@ class Profile(ExtendedCog):
             for roles in [await convert_to_roles(ctx, r_s) for r_s in role_sources]
             for role in roles
         ]
-        # filter out discord or integration managed roles
-        profile_roles = filter(
-            lambda role: not (
-                role.is_default()
-                or role.is_bot_managed()
-                or role.is_premium_subscriber()
-                or role.is_integration()
-            ),
-            profile_roles,
-        )
+
+        if len(profile_roles) > self.profile_role_limit:
+            raise commands.BadArgument(
+                self.commands_info["profile"]["subcommands"]["create"]["errors"][
+                    "TooManyRoles"
+                ].format(
+                    profile_role_limit=self.profile_role_limit,
+                    profile_role_number=len(profile_roles),
+                )
+            )
+
         # sort the roles by position
         profile_roles = sorted(
             profile_roles, key=lambda role: role.position, reverse=True
+        )
+
+        firecord.profile_create(
+            ctx.guild.id,
+            ctx.author.id,
+            profile_name,
+            [role.id for role in profile_roles],
         )
 
         await ctx.send(

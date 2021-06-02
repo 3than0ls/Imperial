@@ -113,5 +113,21 @@ class Firecord:
 
         add_setting(transaction, self.firestore.collection("guilds").list_documents())
 
+    # --------- GUILD PROFILE METHODS -------------
+    def profile_exists(self, guild_id, profile_name):
+        ref, *_ = self.use_guild(guild_id)
+        return ref.collection("profiles").document(profile_name).get().exists
+
+    def profile_create(self, guild_id, author_id, profile_name, profile_role_ids):
+        """create a profile in specified guild"""
+        ref, *_ = self.use_guild(guild_id)
+        ref.collection("profiles").document(profile_name).set(
+            {
+                "profile_roles": profile_role_ids,
+                "creator": author_id,
+                "created": firestore.SERVER_TIMESTAMP,  # pylint: disable=no-member
+            }
+        )
+
 
 firecord = Firecord()

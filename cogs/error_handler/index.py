@@ -63,11 +63,11 @@ class ErrorHandler(ExtendedCog):
                 )
             )
         else:
-            error_command_string = f"{ctx.prefix}{ctx.invoked_with}"
+            error_command_string = f'{ctx.prefix}{(getattr(ctx.command, "root_parent", None) and (ctx.command.root_parent.name + " " + ctx.invoked_with)) or ctx.invoked_with}'
 
             command_name = (
                 getattr(ctx.command, "root_parent", None)
-                and f"{ctx.command.root_parent.name} {ctx.command.name}"
+                and ctx.command.root_parent.name
             ) or ctx.command.name
             command_info = ctx.cog.commands_info.get(command_name, {})
 
@@ -82,10 +82,7 @@ class ErrorHandler(ExtendedCog):
                     )
                 )
 
-            if (
-                type(error).__name__ in command_info.get("errors", {})
-                or ctx.command.parents
-            ):
+            if type(error).__name__ in command_info.get("errors", {}):
                 await ctx.send(
                     embed=EmbedFactory(
                         {"description": error.args[0]},

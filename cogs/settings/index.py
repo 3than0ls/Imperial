@@ -81,13 +81,14 @@ class Settings(ExtendedCog):
 
         # validate user input
         if not validation_rules[setting_name](value):
-            raise discord.InvalidArgument(
+            raise commands.BadArgument(
                 self.commands_info["settings"]["subcommands"]["set"]["errors"][
                     "InvalidArgument"
                 ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
             )
 
         firecord.set_guild_data(str(ctx.guild.id), {setting_name: value})
+
         await ctx.send(
             embed=EmbedFactory(
                 self.commands_info["settings"]["subcommands"]["set"]["embed"],  # messy
