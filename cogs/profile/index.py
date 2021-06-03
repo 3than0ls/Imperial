@@ -1,9 +1,12 @@
+import discord
 from discord.ext import commands
+from discord.ext.commands.converter import MemberConverter, RoleConverter
 from cogs.profile.helper import convert_to_roles  # pylint: disable=import-error
 from firecord import firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.confirm import confirm  # pylint: disable=import-error
+from utils.proper import proper  # pylint: disable=import-error
 from utils.pagination import pagination  # pylint: disable=import-error
 from checks.has_access import has_access  # pylint: disable=import-error
 
@@ -70,9 +73,9 @@ class Profile(ExtendedCog):
 
         firecord.profile_create(
             str(ctx.guild.id),
-            ctx.author.id,
-            profile_name,
-            [role.id for role in profile_roles],
+            str(ctx.author.id),
+            str(profile_name),
+            [str(role.id) for role in profile_roles],
         )
 
         await ctx.send(
@@ -130,9 +133,74 @@ class Profile(ExtendedCog):
             ),
         )
 
+    @has_access()
     @commands.command()
     async def profiles(self, ctx):
         await ctx.invoke(self.bot.get_command("profile _list"))
+
+    @has_access()
+    @profile.command(require_var_positional=True, aliases=["give"])
+    async def assign(self, ctx, profile_name, *members):
+        # handle/process/filter members
+        member_objs = []
+        for member in members:
+            try:
+                member_obj = await MemberConverter().convert(ctx, member)
+            except commands.errors.MemberNotFound:
+                raise commands.BadArgument(
+                    self.commands_info["profile"]["subcommands"]["assign"]["errors"][
+                        "MemberError"
+                    ].format(member=member)
+                )
+            member_objs.append(member_obj)
+
+        # handle/process/filter profile and profile roles
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
+        if profile is None:
+            raise commands.BadArgument(
+                self.commands_info["profile"]["subcommands"]["assign"]["errors"][
+                    "ProfileError"
+                ].format(profile_name=profile_name)
+            )
+        profile = profile.to_dict()
+
+        role_objs = []
+        for role_id in profile["profile_roles"]:
+            try:
+                role_objs.append(await RoleConverter().convert(ctx, role_id))
+            except commands.errors.RoleNotFound:
+                print(f"{role_id} was not found, removing")
+
+        # for each member mentioned edit their roles
+        for member_obj in member_objs:
+            await member_obj.edit(roles=role_objs)
+
+        await ctx.send(
+            embed=EmbedFactory(
+                self.commands_info["profile"]["subcommands"]["assign"]["embed"],
+                formatting_data={
+                    "profile_name": profile["name"],
+                    "members": proper(
+                        [member_obj.mention for member_obj in member_objs]
+                    ),
+                },
+            )
+        )
+
+    @has_access()
+    @profile.command(require_var_positional=True)
+    async def info(self, ctx, profile_name):
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
+
+        if profile is None:
+            raise commands.BadArgument(
+                self.commands_info["profile"]["subcommands"]["assign"]["errors"][
+                    "ProfileError"
+                ].format(profile_name=profile_name)
+            )
+
+        print(dir(profile))
+        profile = profile.to_dict()
 
 
 def setup(bot):

@@ -137,5 +137,13 @@ class Firecord:
 
         return [profile.to_dict() for profile in profiles]
 
+    def profile_get(self, guild_id: str, profile_name: str):
+        ref, *_ = self.use_guild(guild_id=guild_id)
+        profile = ref.collection("profiles").document(profile_name).get()
+
+        if profile.exists:
+            return profile
+        return None
+
 
 firecord = Firecord()

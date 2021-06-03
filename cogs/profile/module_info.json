@@ -40,7 +40,44 @@
                     "embed": {
                         "title": "List of profiles for {server_name}",
                         "description": "{server_name} has **{profiles_num}** profiles. To change the order you view profiles at, run `{prefix}profile list [created/creator/roles]`.\nFor more information about a profile, run `{prefix}profile info [profile_name]`.",
-                        "fields": {}
+                        "fields": []
+                    }
+                },
+                "assign": {
+                    "embed": {
+                        "title": "Profile Assigned",
+                        "description": "{profile_name} has been assigned to {members}.",
+                        "color": "success"
+                    },
+                    "errors": {
+                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?",
+                        "MemberError": "Please specify valid members to assign profiles to. The provided value \"{member}\" is not a valid member/mention/name/user ID."
+                    }
+                },
+                "info": {
+                    "embed": {
+                        "title": "Profile: {profile_name}",
+                        "description": "To assign this profile, run `{prefix}profile assign {profile_name} [members]`.\nTo delete this profile, run `{prefix}profile delete {profile_name}.",
+                        "fields": [
+                            {
+                                "name": "Creation Date",
+                                "value": "{created}",
+                                "inline": false
+                            },
+                            {
+                                "name": "Creator",
+                                "value": "{creator}",
+                                "inline": false
+                            },
+                            {
+                                "name": "Roles in this profile",
+                                "value": "{profile_roles}",
+                                "inline": false
+                            }
+                        ]
+                    },
+                    "errors": {
+                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?"
                     }
                 }
             }

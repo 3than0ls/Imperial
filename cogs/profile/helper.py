@@ -2,6 +2,16 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import errors
 
+
+def role_filter(role):
+    return not (
+        role.is_default()
+        or role.is_bot_managed()
+        or role.is_premium_subscriber()
+        or role.is_integration()
+    )
+
+
 ### DISCORDPY STRING TO MEMBER/ROLE FUNCTIONS
 async def convert_str_to_thing(ctx, str):
     """converts a string to either a discord Member or discord Role object"""
@@ -33,12 +43,7 @@ async def convert_to_roles(ctx, thing):
 
     # filter out discord or integration managed roles
     roles = filter(
-        lambda role: not (
-            role.is_default()
-            or role.is_bot_managed()
-            or role.is_premium_subscriber()
-            or role.is_integration()
-        ),
+        role_filter,
         roles,
     )
 
