@@ -138,12 +138,26 @@ class Firecord:
         return [profile.to_dict() for profile in profiles]
 
     def profile_get(self, guild_id: str, profile_name: str):
+        """gets the profile information of the specified profile_name profile"""
         ref, *_ = self.use_guild(guild_id=guild_id)
         profile = ref.collection("profiles").document(profile_name).get()
 
         if profile.exists:
             return profile
         return None
+
+    def profile_delete(self, guild_id: str, profile_name: str):
+        """deletes profile_name profile"""
+        ref, *_ = self.use_guild(guild_id=guild_id)
+        profile = ref.collection("profiles").document(profile_name)
+        return profile.delete()
+
+    def profile_edit_roles(self, guild_id: str, profile_name: str, new_roles):
+        """replaces the roles in profile_roles (in the event a role does not exist anymore)"""
+        ref, *_ = self.use_guild(guild_id=guild_id)
+        profile = ref.collection("profiles").document(profile_name)
+        profile.update({"profile_roles": new_roles})
+        return profile.get()
 
 
 firecord = Firecord()

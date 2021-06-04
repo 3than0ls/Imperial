@@ -3,24 +3,43 @@
     "description": "Conveiently create and assign a group of roles, or a Profile, to server members.",
     "commands": {
         "profile": {
-            "description": "Conveniently create, assign, and update Profiles (groups of roles). Profiles are not stored on the server or on Discord, but rather on the bot.\nTo view more information, run `{prefix}profile`.",
+            "usage": {
+                "{prefix}profile": "View more information about the profile module and its subcommands."
+            },
+            "description": "View information about profile subcommands. Profiles are not stored on the server or on Discord, but rather on the bot.\n**Most commands for the Profile module are subcommands of this command. Run this command to view more information about them.**",
             "embed": {
                 "title": "Profiles",
-                "description": "Profiles are server specific groups of roles that you can create and assign to member. This makes it more convenient when assigning multiple roles to users that frequently have roles removed or changed, or useres that leave or are kicked but rejoin often.",
+                
+                "description": "Profiles are server specific groups of roles that you can create and assign to member. This makes it more convenient when assigning multiple roles to users that frequently have roles removed or changed, or users that leave or are kicked but rejoin often.",
                 "fields": [
                     {
-                        "name": "**Create profiles: `{prefix}profile create [profile_name] [members/roles]`**",
-                        "value": "Profiles can be created from roles, roles from users, or a combination of both. If you create a profile using an already existing name, the new profile will overwrite the old one. Roles and members can be referenced by ID, name, or mention.\n**Example:**\n`{prefix}profile create test @role1 @role2`, creates a profile called `test` containing the roles `role1` and `role2`.",
+                        "name": "__**Create profiles: `{prefix}profile create [profile_name] [members/roles]`**__",
+                        "value": "Profiles can be created from roles, roles from users, or a combination of both. If you create a profile using an already existing name, the new profile will overwrite the old one. Roles and members can be referenced by ID, name, or mention.\nExample: `{prefix}profile create test @role1 @role2`, creates a profile called `test` containing the roles `role1` and `role2`.\n",
                         "inline": false
                     },
                     {
-                        "name": "**Delete profiles**",
-                        "value": "delete profile text",
+                        "name": "__**Assign profiles: `{prefix}profile assign [profile_name] [members]`**__",
+                        "value": "Assigning profiles will remove all previous roles a member had and give them the roles of the new profile.\n",
                         "inline": false
                     },
                     {
-                        "name": "**List all profiles `{prefix}profile list`**",
-                        "value": "List all profiles in the server. Can be sorted by appending a `date`/`creator`/`roles` at the end of the command. Does the same thing as `{prefix}profiles`.",
+                        "name": "__**Add profiles: `{prefix}profile assign [profile_name] [members]`**__",
+                        "value": "Adding profiles will give a user all the roles inside a profile on top of the roles a user already has.\n",
+                        "inline": false
+                    },
+                    {
+                        "name": "__**Delete profiles: `{prefix}profile delete [profile_name]`**__",
+                        "value": "Profiles will be deleted from bot database. Profiles containing roles that have been deleted will automatically have the role deleted, and if all roles in a profile do not exist, the profile will automatically delete.\n",
+                        "inline": false
+                    },
+                    {
+                        "name": "__**List all profiles `{prefix}profile list`**__",
+                        "value": "List all profiles in the server. Can be sorted by appending a `date`/`creator`/`roles` at the end of the command. Does the same thing as `{prefix}profiles`.\n",
+                        "inline": false
+                    },
+                    {
+                        "name": "__**Profile information `{prefix}profile info [profile_name]`**__",
+                        "value": "Gives basic information about a profile, such as creation date, creator, and roles inside the profile.",
                         "inline": false
                     }
                 ]
@@ -39,25 +58,46 @@
                 "_list": {
                     "embed": {
                         "title": "List of profiles for {server_name}",
-                        "description": "{server_name} has **{profiles_num}** profiles. To change the order you view profiles at, run `{prefix}profile list [created/creator/roles]`.\nFor more information about a profile, run `{prefix}profile info [profile_name]`.",
+                        "description": "{server_name} has **{profiles_num}** profiles.\nTo change the sort order you view profiles at, run `{prefix}profile list [created/creator/roles]`.\nFor more information about a profile, run `{prefix}profile info [profile_name]`.",
                         "fields": []
                     }
                 },
                 "assign": {
                     "embed": {
-                        "title": "Profile Assigned",
-                        "description": "{profile_name} has been assigned to {members}.",
+                        "title": "Profile Assigned To Member(s)",
+                        "description": "Profile **{profile_name}** has been assigned to {members}, replacing all of their previous roles.",
                         "color": "success"
                     },
                     "errors": {
-                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?",
+                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?\nRun `{prefix}profile list` to get a list of existing profiles.",
                         "MemberError": "Please specify valid members to assign profiles to. The provided value \"{member}\" is not a valid member/mention/name/user ID."
+                    }
+                },
+                "add": {
+                    "embed": {
+                        "title": "Profile Added To Member(s)",
+                        "description": "Profile **{profile_name}** has been added to {members}, on top of their previous roles.",
+                        "color": "success"
+                    },
+                    "errors": {
+                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?\nRun `{prefix}profile list` to get a list of existing profiles.",
+                        "MemberError": "Please specify valid members to assign profiles to. The provided value \"{member}\" is not a valid member/mention/name/user ID."
+                    }
+                },
+                "delete": {
+                    "embed": {
+                        "title": "Profile Deleted",
+                        "description": "Profile **{profile_name}** has been deleted.",
+                        "color": "success"
+                    },
+                    "errors": {
+                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?\nRun `{prefix}profile list` to get a list of existing profiles."
                     }
                 },
                 "info": {
                     "embed": {
                         "title": "Profile: {profile_name}",
-                        "description": "To assign this profile, run `{prefix}profile assign {profile_name} [members]`.\nTo delete this profile, run `{prefix}profile delete {profile_name}.",
+                        "description": "To assign this profile, run `{prefix}profile assign {profile_name} [members]`.\nTo delete this profile, run `{prefix}profile delete {profile_name}`.",
                         "fields": [
                             {
                                 "name": "Creation Date",
@@ -77,12 +117,15 @@
                         ]
                     },
                     "errors": {
-                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?"
+                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?\nRun `{prefix}profile list` to get a list of existing profiles."
                     }
                 }
             }
         },
         "profiles": {
+            "usage": {
+                "{prefix}profiles": "View all profiles in this server."
+            },
             "description": "Lists profiles in the server. Synonymous to running `{prefix}profile list`."
         }
     }

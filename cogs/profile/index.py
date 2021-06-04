@@ -1,7 +1,11 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands.converter import MemberConverter, RoleConverter
-from cogs.profile.helper import convert_to_roles  # pylint: disable=import-error
+from discord.ext.commands.converter import MemberConverter, RoleConverter, UserConverter
+from cogs.profile.helper import (  # pylint: disable=import-error
+    convert_to_roles,
+    role_filter,
+    validate_convert_roles,
+)
 from firecord import firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
@@ -33,7 +37,7 @@ class Profile(ExtendedCog):
             )
 
     @has_access()
-    @profile.command(require_var_positional=True, aliases=["add", "new"])
+    @profile.command(require_var_positional=True, aliases=["new"])
     async def create(self, ctx, profile_name, *role_sources):
         if len(profile_name) > 32 or "/" in profile_name:
             raise commands.BadArgument(
@@ -75,7 +79,7 @@ class Profile(ExtendedCog):
             str(ctx.guild.id),
             str(ctx.author.id),
             str(profile_name),
-            [str(role.id) for role in profile_roles],
+            [str(role.id) for role in set(profile_roles)],
         )
 
         await ctx.send(
@@ -160,16 +164,11 @@ class Profile(ExtendedCog):
             raise commands.BadArgument(
                 self.commands_info["profile"]["subcommands"]["assign"]["errors"][
                     "ProfileError"
-                ].format(profile_name=profile_name)
+                ].format(profile_name=profile_name, prefix=ctx.prefix)
             )
         profile = profile.to_dict()
 
-        role_objs = []
-        for role_id in profile["profile_roles"]:
-            try:
-                role_objs.append(await RoleConverter().convert(ctx, role_id))
-            except commands.errors.RoleNotFound:
-                print(f"{role_id} was not found, removing")
+        role_objs = await validate_convert_roles(ctx, profile)
 
         # for each member mentioned edit their roles
         for member_obj in member_objs:
@@ -189,6 +188,55 @@ class Profile(ExtendedCog):
 
     @has_access()
     @profile.command(require_var_positional=True)
+    async def add(self, ctx, profile_name, *members):
+        # handle/process/filter members
+        member_objs = []
+        for member in members:
+            try:
+                member_obj = await MemberConverter().convert(ctx, member)
+            except commands.errors.MemberNotFound:
+                raise commands.BadArgument(
+                    self.commands_info["profile"]["subcommands"]["assign"]["errors"][
+                        "MemberError"
+                    ].format(member=member)
+                )
+            member_objs.append(member_obj)
+
+        # handle/process/filter profile and profile roles
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
+        if profile is None:
+            raise commands.BadArgument(
+                self.commands_info["profile"]["subcommands"]["add"]["errors"][
+                    "ProfileError"
+                ].format(profile_name=profile_name, prefix=ctx.prefix)
+            )
+        profile = profile.to_dict()
+
+        role_objs = await validate_convert_roles(ctx, profile)
+
+        # for each member mentioned edit their roles
+        for member_obj in member_objs:
+            await member_obj.edit(
+                roles=[
+                    *role_objs,
+                    *[role for role in member_obj.roles if role_filter(role)],
+                ]
+            )
+
+        await ctx.send(
+            embed=EmbedFactory(
+                self.commands_info["profile"]["subcommands"]["add"]["embed"],
+                formatting_data={
+                    "profile_name": profile["name"],
+                    "members": proper(
+                        [member_obj.mention for member_obj in member_objs]
+                    ),
+                },
+            )
+        )
+
+    @has_access()
+    @profile.command(require_var_positional=True, aliases=["roles"])
     async def info(self, ctx, profile_name):
         profile = firecord.profile_get(str(ctx.guild.id), profile_name)
 
@@ -196,11 +244,59 @@ class Profile(ExtendedCog):
             raise commands.BadArgument(
                 self.commands_info["profile"]["subcommands"]["assign"]["errors"][
                     "ProfileError"
-                ].format(profile_name=profile_name)
+                ].format(profile_name=profile_name, prefix=ctx.prefix)
             )
 
-        print(dir(profile))
         profile = profile.to_dict()
+
+        await ctx.send(
+            embed=EmbedFactory(
+                self.commands_info["profile"]["subcommands"]["info"]["embed"],
+                formatting_data={
+                    "profile_name": profile["name"],
+                    "created": profile["created"].strftime("%m-%d-%y"),
+                    "creator": (
+                        await UserConverter().convert(ctx, profile["creator"])
+                    ).mention,
+                    "profile_roles": proper(
+                        [
+                            role.mention
+                            for role in sorted(
+                                [await validate_convert_roles(ctx, profile)],
+                                key=lambda role: role.position,
+                                reverse=True,
+                            )
+                        ]
+                    ),
+                    "prefix": ctx.prefix,
+                },
+            )
+        )
+
+    @has_access()
+    @profile.command(require_var_positional=True, aliases=["remove", "erase"])
+    async def delete(self, ctx, profile_name):
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
+
+        if profile is None:
+            raise commands.BadArgument(
+                self.commands_info["profile"]["subcommands"]["delete"]["errors"][
+                    "ProfileError"
+                ].format(profile_name=profile_name, prefix=ctx.prefix)
+            )
+
+        if confirm(
+            ctx, f"Are you sure you want to delete the profile **{profile_name}**?"
+        ):
+            await ctx.send(
+                embed=EmbedFactory(
+                    self.commands_info["profile"]["subcommands"]["delete"]["embed"],
+                    formatting_data={
+                        "profile_name": profile["name"],
+                        "prefix": ctx.prefix,
+                    },
+                )
+            )
 
 
 def setup(bot):

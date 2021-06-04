@@ -10,4 +10,8 @@ def proper(list):
             string += f", {item}"
         elif i == len(list) - 1:
             string += f", and {item}"
+
+    if len(list) == 2:  # if there's only 2 items, there doesn't need to be a comma
+        string = string.replace(",", "")
+
     return string

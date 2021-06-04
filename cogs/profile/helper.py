@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import errors
+from discord.ext.commands.converter import RoleConverter
+from firecord import firecord  # pylint: disable=import-error
 
 
 def role_filter(role):
@@ -39,7 +41,7 @@ async def convert_to_roles(ctx, thing):
     if isinstance(thing, discord.Member):
         roles.extend(thing.roles)
     elif isinstance(thing, discord.Role):
-        roles.append(thing.roles)
+        roles.append(thing)
 
     # filter out discord or integration managed roles
     roles = filter(
@@ -48,3 +50,27 @@ async def convert_to_roles(ctx, thing):
     )
 
     return roles
+
+
+async def validate_convert_roles(ctx, profile):
+    """validates (checks if exists) role ids in profile_roles, converts them into a role object, and return valid ones whilst deleting invalid ones"""
+    valid = []
+    invalid = []
+    for role_id in profile["profile_roles"]:
+        try:
+            valid.append(await RoleConverter().convert(ctx, role_id))
+        except commands.errors.RoleNotFound:
+            invalid.append(role_id)
+
+    if len(invalid) == len(profile["profile_roles"]):
+        # if all roles in a profile are deleted, delete the profile and throw error
+        firecord.profile_delete(str(ctx.guild.id), profile["name"])
+        raise errors.BadArgument(
+            f"The profile \"{profile['name']}\" no longer exists. The roles used by this profile have all been deleted, and so the profile was automatically deleted as well."
+        )
+    else:  # if only some roles are deleted, remove those from the profile on firebase
+        firecord.profile_edit_roles(
+            str(ctx.guild.id), profile["name"], [str(role.id) for role in valid]
+        )
+
+    return list(set(valid))

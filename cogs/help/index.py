@@ -1,11 +1,10 @@
 import os
-import pathlib
-
 import discord
 from discord.ext import commands
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.info import get_module_info  # pylint: disable=import-error
+from utils.pagination import pagination  # pylint: disable=import-error
 from utils.regexp import pascal_to_words  # pylint: disable=import-error
 from firecord import firecord  # pylint: disable=import-error
 
@@ -61,8 +60,9 @@ class Help(ExtendedCog):
 
     @commands.command(aliases=["cogs"], require_var_positional=True)
     async def modules(self, ctx):
-        await ctx.send(
-            embed=EmbedFactory(
+        await pagination(
+            ctx,
+            EmbedFactory(
                 {
                     **self.command_info["embed"],
                     "fields": [
@@ -78,7 +78,7 @@ class Help(ExtendedCog):
                         if not cog.hidden
                     ],
                 }
-            )
+            ),
         )
 
     @commands.command(
@@ -98,8 +98,9 @@ class Help(ExtendedCog):
                 )
             )
 
-        await ctx.send(
-            embed=EmbedFactory(
+        await pagination(
+            ctx,
+            EmbedFactory(
                 {
                     **self.command_info["embed"],
                     "description": self.command_info["embed"].get("description", "")
@@ -121,7 +122,7 @@ class Help(ExtendedCog):
                     ],
                 },
                 formatting_data={"module": cog.module_info, "prefix": ctx.prefix},
-            )
+            ),
         )
 
     @commands.command(
@@ -140,6 +141,7 @@ class Help(ExtendedCog):
             )
 
         command_info = command.cog.commands_info[command.qualified_name]
+        params = command.clean_params.values()
 
         await ctx.send(
             embed=EmbedFactory(
@@ -147,13 +149,17 @@ class Help(ExtendedCog):
                 formatting_data={
                     "command": command,
                     "command_info": command_info,
-                    "aliases": ", ".join(f"`{alias}`" for alias in command.aliases),
+                    "aliases": ", ".join(alias for alias in command.aliases)
+                    if len(command.aliases) > 0
+                    else "This command does not have any aliases.",
                     "params": "\n".join(
                         [
                             f'`{param.name}` - **{"Required" if param.default is param.empty else "Optional"}** - {command_info.get("params", {}).get(param.name, "No description was given.")}'
-                            for param in command.clean_params.values()
+                            for param in params
                         ]
-                    ),
+                    )
+                    if len(params) > 0
+                    else "This command does not have any parameters.",
                     "usage": (
                         "\n".join(
                             [

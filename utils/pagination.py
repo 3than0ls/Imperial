@@ -11,6 +11,16 @@ async def pagination(
 
     embed = embed.to_dict()
 
+    if len(embed["fields"]) == 0:
+        return await ctx.send(
+            embed=discord.Embed().from_dict(
+                {
+                    **embed,
+                    "footer": {"text": f"There does not appear to be any content..."},
+                }
+            )
+        )
+
     field_chunks = [
         embed["fields"][i : i + max_fields]
         for i in range(0, len(embed["fields"]), max_fields)
