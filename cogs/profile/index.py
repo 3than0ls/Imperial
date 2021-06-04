@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands.converter import MemberConverter, RoleConverter, UserConverter
+from discord.ext.commands.converter import MemberConverter, UserConverter
 from cogs.profile.helper import (  # pylint: disable=import-error
     convert_to_roles,
     role_filter,
@@ -13,9 +13,6 @@ from utils.confirm import confirm  # pylint: disable=import-error
 from utils.proper import proper  # pylint: disable=import-error
 from utils.pagination import pagination  # pylint: disable=import-error
 from checks.has_access import has_access  # pylint: disable=import-error
-
-# move Profile storage to backend
-# possibly link member id(s?) to a profile, and when an update_all_profiles is called, all profiles are update to be whatever the roles of the current member is
 
 
 class Profile(ExtendedCog):
@@ -63,7 +60,7 @@ class Profile(ExtendedCog):
                 )
             )
 
-        if firecord.profile_exists(str(ctx.guild.id), profile_name):
+        if firecord.profile_exists(ctx.guild.id, profile_name):
             if not await confirm(
                 ctx,
                 f'The profile "{profile_name}" already exists. Creating a profile with this name will override and replace the old one. Are you sure you want to proceed?',
@@ -76,10 +73,10 @@ class Profile(ExtendedCog):
         )
 
         firecord.profile_create(
-            str(ctx.guild.id),
-            str(ctx.author.id),
+            ctx.guild.id,
+            ctx.author.id,
             str(profile_name),
-            [str(role.id) for role in set(profile_roles)],
+            [role.id for role in set(profile_roles)],
         )
 
         await ctx.send(
@@ -97,7 +94,7 @@ class Profile(ExtendedCog):
     @profile.command(require_var_positional=True, aliases=["list", "all"])
     async def _list(self, ctx, order="alphabetical"):
         # perhaps a with typing()...
-        profile_list = firecord.profile_list(str(ctx.guild.id))
+        profile_list = firecord.profile_list(ctx.guild.id)
 
         if order == "created" or order == "date":
             profile_list = sorted(profile_list, key=lambda profile: profile["created"])
@@ -159,7 +156,7 @@ class Profile(ExtendedCog):
             member_objs.append(member_obj)
 
         # handle/process/filter profile and profile roles
-        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
+        profile = firecord.profile_get(ctx.guild.id, profile_name)
         if profile is None:
             raise commands.BadArgument(
                 self.commands_info["profile"]["subcommands"]["assign"]["errors"][
@@ -203,7 +200,7 @@ class Profile(ExtendedCog):
             member_objs.append(member_obj)
 
         # handle/process/filter profile and profile roles
-        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
+        profile = firecord.profile_get(ctx.guild.id, profile_name)
         if profile is None:
             raise commands.BadArgument(
                 self.commands_info["profile"]["subcommands"]["add"]["errors"][
@@ -238,7 +235,7 @@ class Profile(ExtendedCog):
     @has_access()
     @profile.command(require_var_positional=True, aliases=["roles"])
     async def info(self, ctx, profile_name):
-        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
+        profile = firecord.profile_get(ctx.guild.id, profile_name)
 
         if profile is None:
             raise commands.BadArgument(
@@ -276,7 +273,7 @@ class Profile(ExtendedCog):
     @has_access()
     @profile.command(require_var_positional=True, aliases=["remove", "erase"])
     async def delete(self, ctx, profile_name):
-        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
+        profile = firecord.profile_get(ctx.guild.id, profile_name)
 
         if profile is None:
             raise commands.BadArgument(
@@ -284,10 +281,12 @@ class Profile(ExtendedCog):
                     "ProfileError"
                 ].format(profile_name=profile_name, prefix=ctx.prefix)
             )
+        profile = profile.to_dict()
 
-        if confirm(
+        if await confirm(
             ctx, f"Are you sure you want to delete the profile **{profile_name}**?"
         ):
+            firecord.profile_delete(ctx.guild.id, profile["name"])
             await ctx.send(
                 embed=EmbedFactory(
                     self.commands_info["profile"]["subcommands"]["delete"]["embed"],

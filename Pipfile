@@ -14,6 +14,7 @@ firebase-admin = "*"
 google-cloud-firestore = "*"
 pydictionary = "*"
 udpy = "*"
+emoji = "*"
 
 [requires]
 python_version = "3.8"

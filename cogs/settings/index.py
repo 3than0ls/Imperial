@@ -13,7 +13,7 @@ class Settings(ExtendedCog):
 
     @ExtendedCog.listener(name="on_guild_join")
     async def on_guild_join(self, guild):
-        firecord.init_guild(str(guild.id))
+        firecord.init_guild(guild.id)
 
         # try to find a general/chat channel, and invoke help command there.
         if channel := discord.utils.find(
@@ -44,7 +44,7 @@ class Settings(ExtendedCog):
     )
     async def settings(self, ctx):
         if ctx.subcommand_passed is None:
-            guild_data = firecord.get_guild_data(str(ctx.guild.id))
+            guild_data = firecord.get_guild_data(ctx.guild.id)
             await ctx.send(
                 embed=EmbedFactory(
                     self.command_info["embed"],
@@ -59,7 +59,7 @@ class Settings(ExtendedCog):
     @settings.command(require_var_positional=True, aliases=["get"])
     async def info(self, ctx, *, setting_name):
         setting_name, setting_info = self.check_settings_exists(setting_name)
-        guild_data = firecord.get_guild_data(str(ctx.guild.id))
+        guild_data = firecord.get_guild_data(ctx.guild.id)
         await ctx.send(
             embed=EmbedFactory(
                 {
@@ -87,7 +87,7 @@ class Settings(ExtendedCog):
                 ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
             )
 
-        firecord.set_guild_data(str(ctx.guild.id), {setting_name: value})
+        firecord.set_guild_data(ctx.guild.id, {setting_name: value})
 
         await ctx.send(
             embed=EmbedFactory(
@@ -105,7 +105,7 @@ class Settings(ExtendedCog):
         setting_name, _ = self.check_settings_exists(setting_name)
 
         firecord.set_guild_data(
-            str(ctx.guild.id), {setting_name: DEFAULT_CONFIG[setting_name]}
+            ctx.guild.id, {setting_name: DEFAULT_CONFIG[setting_name]}
         )
         await ctx.send(
             embed=EmbedFactory(

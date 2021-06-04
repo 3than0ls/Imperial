@@ -38,7 +38,7 @@ class Firecord:
         # all the lines above could be simplified to one line, but that'd be terribly messy
         return self.prefix_map
 
-    def update_prefix_map(self, guild_id: str, new_prefix=None):
+    def update_prefix_map(self, guild_id: int, new_prefix=None):
         """should be called if a prefix will be changed. Changing the prefix, refetching all guilds prefix (in init_prefix_map) and then mapping is slower."""
         if new_prefix is None or new_prefix == "":
             new_prefix = DEFAULT_CONFIG.get("prefix", ">")
@@ -47,14 +47,14 @@ class Firecord:
         return self.prefix_map
 
     # --------- SINGLE GUILD RELATED METHODS ---------
-    def init_guild(self, guild_id: str):
+    def init_guild(self, guild_id: int):
         """simply create a document in the database with the default config. returns the default config"""
         snapshot = self.firestore.document(f"guilds/{guild_id}")
         snapshot.set(DEFAULT_CONFIG)
         self.update_prefix_map(guild_id)
         return DEFAULT_CONFIG
 
-    def use_guild(self, guild_id: str, get_snapshot: bool = True):
+    def use_guild(self, guild_id: int, get_snapshot: bool = True):
         """return a [DocumentRef, DocumentSnapshot, dict] to be used, and also if the guild id isn't in the database, create it using default settings."""
         ref = self.firestore.document(f"guilds/{guild_id}")
         snapshot = ref.get()
@@ -67,12 +67,12 @@ class Firecord:
 
         return ref, snapshot, snapshot.to_dict()
 
-    def get_guild_data(self, guild_id: str) -> dict:
+    def get_guild_data(self, guild_id: int) -> dict:
         """get guild data from guild_id (str or int) parameter. If guild doesn't exist in firestore, create it using default values and return that.
         Ensure that the guild_id is the ID of a guild, as it will create a collection using this ID regardless of the value of guild_id"""
         return self.use_guild(guild_id)[2]
 
-    def set_guild_data(self, guild_id: str, new_values: dict) -> dict:
+    def set_guild_data(self, guild_id: int, new_values: dict) -> dict:
         """update guild data from guild_id (str or int) parameter and an update_dict. If guild doesn't exist in firestore, create it using default values and return that.
         Ensure that the guild_id is the ID of a guild, as it will create a collection using this ID regardless of the value of guild_id.
         Update nested values in new_values parameter by using foo.bar: 1 rather than creating a nested object foo: { bar: 1 }, as described in firebase docs."""
@@ -85,7 +85,7 @@ class Firecord:
         # return new values from new snapshot
         return ref.get().to_dict()
 
-    def reset_guild_data(self, guild_id: str) -> dict:
+    def reset_guild_data(self, guild_id: int) -> dict:
         """reset the guild data collection to default config. An alias for init_guild as they do the exact same thing."""
         return self.init_guild(guild_id)
 
@@ -114,11 +114,11 @@ class Firecord:
         add_setting(transaction, self.firestore.collection("guilds").list_documents())
 
     # --------- GUILD PROFILE METHODS -------------
-    def profile_exists(self, guild_id: str, profile_name: str):
+    def profile_exists(self, guild_id: int, profile_name: str):
         ref, *_ = self.use_guild(guild_id)
         return ref.collection("profiles").document(profile_name).get().exists
 
-    def profile_create(self, guild_id: str, author_id, profile_name, profile_role_ids):
+    def profile_create(self, guild_id: int, author_id, profile_name, profile_role_ids):
         """create a profile in specified guild"""
         ref, *_ = self.use_guild(guild_id)
         ref.collection("profiles").document(profile_name).set(
@@ -130,14 +130,14 @@ class Firecord:
             }
         )
 
-    def profile_list(self, guild_id: str):
+    def profile_list(self, guild_id: int):
         """list all profiles from a guild"""
         ref, *_ = self.use_guild(guild_id=guild_id)
         profiles = ref.collection("profiles").get()
 
         return [profile.to_dict() for profile in profiles]
 
-    def profile_get(self, guild_id: str, profile_name: str):
+    def profile_get(self, guild_id: int, profile_name: str):
         """gets the profile information of the specified profile_name profile"""
         ref, *_ = self.use_guild(guild_id=guild_id)
         profile = ref.collection("profiles").document(profile_name).get()
@@ -146,13 +146,13 @@ class Firecord:
             return profile
         return None
 
-    def profile_delete(self, guild_id: str, profile_name: str):
+    def profile_delete(self, guild_id: int, profile_name: str):
         """deletes profile_name profile"""
         ref, *_ = self.use_guild(guild_id=guild_id)
         profile = ref.collection("profiles").document(profile_name)
         return profile.delete()
 
-    def profile_edit_roles(self, guild_id: str, profile_name: str, new_roles):
+    def profile_edit_roles(self, guild_id: int, profile_name: str, new_roles):
         """replaces the roles in profile_roles (in the event a role does not exist anymore)"""
         ref, *_ = self.use_guild(guild_id=guild_id)
         profile = ref.collection("profiles").document(profile_name)

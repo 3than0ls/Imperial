@@ -1,0 +1,25 @@
+{
+    "name": "Reaction Roles",
+    "description": "Allow server members to react to messages to receive roles and profiles.",
+    "commands": {
+        "reaction_role": {
+            "description": "",
+            "params": {
+                "role": "The role to assign",
+                "channel": "The channel to send the reaction role message in",
+                "emoji": "The emoji that users react to for the specified role."
+            },
+            "usage": {
+                "test": "test"
+            },
+            "embed": {
+                "description": "React with {emoji} to get the {role_mention} role!"
+            },
+            "errors": {
+                "InvalidEmoji": "The emoji {emoji} is not an emoji that can be used.",
+                "InvalidRole": "The role {role_mention} is not a valid role that can be assigned.",
+                "RoleError": "The role \"{role}\" was not found in this server."
+            }
+        }
+    }
+}

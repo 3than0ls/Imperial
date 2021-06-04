@@ -20,7 +20,7 @@ class Client(commands.Bot):
 
     def __prefix(self, bot, message):
         return firecord.prefix_map.get(
-            str(message.guild.id), DEFAULT_CONFIG.get("prefix", ">")
+            message.guild.id, DEFAULT_CONFIG.get("prefix", ">")
         )
 
     def start_bot(self):

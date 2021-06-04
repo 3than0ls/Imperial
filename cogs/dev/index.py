@@ -19,6 +19,7 @@ class Dev(ExtendedCog):
         if message.author.id == self.bot.user.id:
             return
 
+        print(type(os.environ["OWNER_UID"]))
         if str(message.author.id) == os.environ["OWNER_UID"]:
             if message.content == "--quit" or message.content == "-Q":
                 print("shutting down")

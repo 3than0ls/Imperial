@@ -33,7 +33,7 @@ class Help(ExtendedCog):
                 formatting_data={
                     "me": ctx.me,
                     "guild": ctx.guild,
-                    "prefix": ctx.prefix or firecord.prefix_map[str(ctx.guild.id)],
+                    "prefix": ctx.prefix or firecord.prefix_map[ctx.guild.id],
                     "invite_url": discord.utils.oauth_url(
                         os.environ["BOT_TOKEN"],
                         permissions=discord.Permissions(permissions=8),

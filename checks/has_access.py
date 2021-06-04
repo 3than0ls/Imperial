@@ -4,7 +4,7 @@ from firecord import DEFAULT_CONFIG, firecord  # pylint: disable=import-error
 
 def has_access():
     async def predicate(ctx):
-        guild_settings = firecord.get_guild_data(str(ctx.guild.id))
+        guild_settings = firecord.get_guild_data(ctx.guild.id)
 
         # if the author is bot owner, allow access
         if ctx.author.id == (await ctx.bot.application_info()).owner.id:
