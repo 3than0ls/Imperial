@@ -3,6 +3,7 @@
     "description": "Allow server members to react to messages to receive roles and profiles.",
     "commands": {
         "reaction_role": {
+            "title": "React for a role",
             "description": "",
             "params": {
                 "role": "The role to assign",

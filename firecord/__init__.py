@@ -18,19 +18,21 @@ class Firecord:
         self.app = firebase_admin.initialize_app(_cred)
         self.firestore = firestore.client(app=self.app)
         self.prefix_map = {}
+        self.rr_map = {}
 
     def initialize_bot(self, bot):
         """add discord bot client to firecord to be used. must be called for prefix map to work, and may be used in other methods"""
         self.bot = bot
-        self.init_prefix_map()
+        guilds_collection = self.firestore.collection("guilds")
+        self.init_prefix_map(guilds_collection)
+        self.init_rr(guilds_collection)
 
     # --------- DISCORD BOT PREFIX METHODS ---------
-    def init_prefix_map(self):
+    def init_prefix_map(self, guilds):
         """initialize the prefix map by fetching all values from firestore and mapping them"""
         # get the guild collections
-        guilds_collection = self.firestore.collection("guilds")
         # get snapshot from every document in the guilds collection
-        guild_snapshots = map(lambda ref: ref.get(), guilds_collection.list_documents())
+        guild_snapshots = map(lambda ref: ref.get(), guilds.list_documents())
         # use a dict comprehension to map guild id to prefix
         self.prefix_map = {
             snapshot.id: snapshot.get("prefix") for snapshot in guild_snapshots
@@ -133,7 +135,7 @@ class Firecord:
     def profile_list(self, guild_id: int):
         """list all profiles from a guild"""
         ref, *_ = self.use_guild(guild_id=guild_id)
-        profiles = ref.collection("profiles").get()
+        profiles = ref.collection("profiles").stream()
 
         return [profile.to_dict() for profile in profiles]
 
@@ -142,9 +144,7 @@ class Firecord:
         ref, *_ = self.use_guild(guild_id=guild_id)
         profile = ref.collection("profiles").document(profile_name).get()
 
-        if profile.exists:
-            return profile
-        return None
+        return profile if profile.exists else None
 
     def profile_delete(self, guild_id: int, profile_name: str):
         """deletes profile_name profile"""
@@ -159,5 +159,42 @@ class Firecord:
         profile.update({"profile_roles": new_roles})
         return profile.get()
 
+    # --------- REACTION ROLE METHODS -------------
+    def rr_exists(self, guild_id: int, channel_id: int, message_id: int):
+        """creates a reaction role map. has a strange structure.
+        the key to a reaction_role map is a channel_id-message_id string, and is assigned
+        to a map of emoji to a dictioanry containing 2 keys,
+        type (either role or profile) and id (id of role or profile)"""
+        ref, *_ = self.use_guild(guild_id)
+        channel_rrs = (
+            ref.collection("reaction_roles").document(str(channel_id)).get().to_dict()
+        )
+
+        return message_id in channel_rrs.keys()
+
+    def init_rr(self, guilds):
+        """initialize the reaction_role map by fetching all values from reaction_roles collection from guilds from firestore"""
+        guild_snapshots = [ref.get() for ref in guilds.list_documents()]
+        self.rr_map = {
+            snapshot.id: [
+                rr.get().to_dict()
+                for rr in list(
+                    snapshot.reference.collection("reaction_roles").list_documents()
+                )
+            ]
+            for snapshot in guild_snapshots
+        }
+
+        return self.rr_map
+
+    def rr_create(self, guild_id: int, channel_id: int, message_id: int, rr_info):
+        """creates a reacion roles info map in firestore"""
+        ref, *_ = self.use_guild(guild_id)
+        ref.collection("reaction_roles").document(f"{channel_id}-{message_id}").set(
+            rr_info
+        )
+
 
 firecord = Firecord()
+guilds_collection = firecord.firestore.collection("guilds")
+firecord.init_rr(guilds_collection)
