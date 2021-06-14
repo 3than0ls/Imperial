@@ -45,12 +45,7 @@ class ErrorHandler(ExtendedCog):
             return
 
         elif isinstance(error, commands.NoPrivateMessage):
-            try:
-                await ctx.author.send(
-                    f"{ctx.command} can not be used in Private Messages."
-                )
-            except discord.HTTPException:
-                pass
+            return
 
         elif isinstance(error, commands.CheckFailure):
             await ctx.send(

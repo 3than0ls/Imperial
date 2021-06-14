@@ -186,6 +186,7 @@ class Profile(ExtendedCog):
     @has_access()
     @profile.command(require_var_positional=True)
     async def add(self, ctx, profile_name, *members):
+        """adds the profile roles to a member as opposed to replacing the members roles like how assign does"""
         # handle/process/filter members
         member_objs = []
         for member in members:
@@ -216,7 +217,7 @@ class Profile(ExtendedCog):
             await member_obj.edit(
                 roles=[
                     *role_objs,
-                    *[role for role in member_obj.roles if role_filter(role)],
+                    *[role for role in member_obj.roles],
                 ]
             )
 
@@ -253,13 +254,13 @@ class Profile(ExtendedCog):
                     "profile_name": profile["name"],
                     "created": profile["created"].strftime("%m-%d-%y"),
                     "creator": (
-                        await UserConverter().convert(ctx, profile["creator"])
+                        await UserConverter().convert(ctx, str(profile["creator"]))
                     ).mention,
                     "profile_roles": proper(
                         [
                             role.mention
                             for role in sorted(
-                                [await validate_convert_roles(ctx, profile)],
+                                [*await validate_convert_roles(ctx, profile)],
                                 key=lambda role: role.position,
                                 reverse=True,
                             )

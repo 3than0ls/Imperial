@@ -1,6 +1,8 @@
+from firecord import firecord  # pylint: disable=import-error
 import random
-from discord.ext.commands.converter import RoleConverter
-from discord.ext.commands.errors import BadArgument, MemberNotFound
+import discord
+from discord.ext.commands.converter import EmojiConverter, RoleConverter
+from discord.ext.commands.errors import BadArgument, EmojiNotFound, RoleNotFound
 
 
 def random_circle_emoji(emojis=["🟠", "🟣", "🟤", "🔵", "🟡", "🟢", "⚪", "🔴"]):
@@ -28,17 +30,26 @@ def in_live_listeners(message, live_listeners):
     return None
 
 
-async def validate_params(ctx, command_info, emoji, role):
+async def validate_params(ctx, command_info, emoji, thing):
+    emoji_flag = False
+    # here we need to check if the supplied emoji is a standard, and if so, skip all these steps below
+    if isinstance(emoji, discord.Emoji):
+        if not emoji.is_usable():
+            emoji_flag = True
+    elif isinstance(emoji, discord.PartialEmoji):
+        emoji_flag = True
+    elif isinstance(emoji, str):  # default standard string emoji
+        pass
 
-    if not emoji.is_usable():
+    if emoji_flag:
         raise BadArgument(command_info["errors"]["InvalidEmoji"].format(emoji=emoji))
 
     try:
-        role = RoleConverter().convert(ctx, role)
-    except MemberNotFound:
-        raise BadArgument(command_info["errors"]["RoleError"].format(role=role))
-
-    if invalid_role(role):
-        raise BadArgument(
-            command_info["errors"]["InvalidRole"].format(role_mention=role.mention)
-        )
+        role = await RoleConverter().convert(ctx, str(thing))
+        if invalid_role(role):
+            raise BadArgument(
+                command_info["errors"]["InvalidRole"].format(role_mention=role.mention)
+            )
+    except RoleNotFound:
+        if not firecord.profile_exists(ctx.guild.id, thing):
+            raise BadArgument(command_info["errors"]["InvalidArg"].format(arg=thing))

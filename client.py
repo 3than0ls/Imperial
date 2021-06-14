@@ -1,10 +1,6 @@
 import datetime
-import logging
 import os
-import sys
-import time
 
-import discord
 from discord.ext import commands
 
 from cogs import cogs_list
@@ -19,9 +15,12 @@ class Client(commands.Bot):
         self.help_command = None
 
     def __prefix(self, bot, message):
-        return firecord.prefix_map.get(
-            message.guild.id, DEFAULT_CONFIG.get("prefix", ">")
-        )
+        try:
+            return firecord.prefix_map.get(
+                message.guild.id, DEFAULT_CONFIG.get("prefix", ">")
+            )
+        except AttributeError:
+            return ">"
 
     def start_bot(self):
         for cog_path in cogs_list():
@@ -40,6 +39,6 @@ class Client(commands.Bot):
 
         ctx = await self.get_context(message)
         if ctx.guild is None:
-            return await ctx.send("Cannot work in DMs")
+            return
 
         await self.process_commands(message)

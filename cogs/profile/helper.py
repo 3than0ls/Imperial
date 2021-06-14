@@ -15,20 +15,20 @@ def role_filter(role):
 
 
 ### DISCORDPY STRING TO MEMBER/ROLE FUNCTIONS
-async def convert_str_to_thing(ctx, str):
+async def convert_str_to_thing(ctx, _str):
     """converts a string to either a discord Member or discord Role object"""
     try:
-        return await commands.MemberConverter().convert(ctx, str)
+        return await commands.MemberConverter().convert(ctx, _str)
     except errors.MemberNotFound:
         pass
 
     try:
-        return await commands.RoleConverter().convert(ctx, str)
+        return await commands.RoleConverter().convert(ctx, _str)
     except errors.RoleNotFound:
         pass
 
     raise errors.BadArgument(
-        f'"{str}" is not a valid source of roles (could not be converted into a role or a list of roles from a member). Check if you spelled it correctly.'
+        f'"{_str}" is not a valid source of roles (could not be converted into a role or a list of roles from a member). Check if you spelled it correctly.'
     )
 
 
@@ -58,7 +58,7 @@ async def validate_convert_roles(ctx, profile):
     invalid = []
     for role_id in profile["profile_roles"]:
         try:
-            valid.append(await RoleConverter().convert(ctx, role_id))
+            valid.append(await RoleConverter().convert(ctx, str(role_id)))
         except commands.errors.RoleNotFound:
             invalid.append(role_id)
 

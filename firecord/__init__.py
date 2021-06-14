@@ -160,41 +160,37 @@ class Firecord:
         return profile.get()
 
     # --------- REACTION ROLE METHODS -------------
-    def rr_exists(self, guild_id: int, channel_id: int, message_id: int):
+    def init_rr(self, guilds):
+        """initialize the reaction_role map by fetching all values from reaction_roles collection from guilds from firestore"""
+        guild_snapshots = [ref.get() for ref in guilds.list_documents()]
+        self.rr_map = {
+            int(snapshot.id): {
+                rr.id: rr.get().to_dict()
+                for rr in list(
+                    snapshot.reference.collection("reaction_roles").list_documents()
+                )
+            }
+            for snapshot in guild_snapshots
+        }
+        return self.rr_map
+
+    def rr_create(self, guild_id: int, channel_id: int, message_id: int, rr_info):
         """creates a reaction role map. has a strange structure.
         the key to a reaction_role map is a channel_id-message_id string, and is assigned
         to a map of emoji to a dictioanry containing 2 keys,
         type (either role or profile) and id (id of role or profile)"""
         ref, *_ = self.use_guild(guild_id)
-        channel_rrs = (
-            ref.collection("reaction_roles").document(str(channel_id)).get().to_dict()
-        )
-
-        return message_id in channel_rrs.keys()
-
-    def init_rr(self, guilds):
-        """initialize the reaction_role map by fetching all values from reaction_roles collection from guilds from firestore"""
-        guild_snapshots = [ref.get() for ref in guilds.list_documents()]
-        self.rr_map = {
-            snapshot.id: [
-                rr.get().to_dict()
-                for rr in list(
-                    snapshot.reference.collection("reaction_roles").list_documents()
-                )
-            ]
-            for snapshot in guild_snapshots
-        }
-
-        return self.rr_map
-
-    def rr_create(self, guild_id: int, channel_id: int, message_id: int, rr_info):
-        """creates a reacion roles info map in firestore"""
-        ref, *_ = self.use_guild(guild_id)
         ref.collection("reaction_roles").document(f"{channel_id}-{message_id}").set(
             rr_info
         )
 
+    def rr_delete(self, guild_id: int, channel_id: int, message_id: int):
+        """deletes a rr_info entry from firebase"""
+        ref, *_ = self.use_guild(guild_id=guild_id)
+        rr_info = ref.collection("reaction_roles").document(
+            f"{channel_id}-{message_id}"
+        )
+        return rr_info.delete()
+
 
 firecord = Firecord()
-guilds_collection = firecord.firestore.collection("guilds")
-firecord.init_rr(guilds_collection)
