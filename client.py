@@ -5,12 +5,13 @@ from discord.ext import commands
 
 from cogs import cogs_list
 from firecord import DEFAULT_CONFIG, firecord
+from utils.cache import cache
 
 
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=self.__prefix)
-
+        self.cache = cache
         # disable help command
         self.help_command = None
 

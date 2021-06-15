@@ -6,6 +6,7 @@ from discord.errors import Forbidden
 from discord.ext import commands
 from discord.ext.commands.converter import (
     EmojiConverter,
+    MemberConverter,
     PartialEmojiConverter,
     RoleConverter,
 )
@@ -33,7 +34,7 @@ class ReactionRoles(ExtendedCog):
     def __init__(self, bot):
         super().__init__(bot)
         self.live_listeners = firecord.rr_map
-        self.on_cooldown = {}
+        self.cache = self.bot.cache
 
     async def on_ready(self):
         # validate all listeners in live listeners when on ready
@@ -72,23 +73,23 @@ class ReactionRoles(ExtendedCog):
         self.live_listeners[guild_id][f"{channel_id}-{message_id}"] = rr_info
         firecord.rr_create(guild_id, channel_id, message_id, rr_info)
 
-        print(self.live_listeners)
-
     def apply_cooldown(
         self, message, member
     ):  # check if the user is on reaction role cooldown
-        if message.id not in self.on_cooldown:
-            self.on_cooldown[message.id] = {}
-
         now_time = datetime.now()
         if (
-            member.id in self.on_cooldown[message.id]
-            and (now_time - self.on_cooldown[message.id][member.id]).total_seconds() < 5
+            member.id in self.cache[message.guild.id]["rr"][message.id]
+            and (
+                now_time - self.cache[message.guild.id]["rr"][message.id][member.id]
+            ).total_seconds()
+            < 5
         ):
             # user has reacted to this within the last 5 seconds, just ignore and
-            raise CommandOnCooldown(None, None)
+            raise BadArgument(
+                "literally the most scuffed and dumbly hacky way because i'm too lazy to create a custom error"
+            )
         else:
-            self.on_cooldown[message.id][member.id] = now_time
+            self.cache[message.guild.id]["rr"][message.id][member.id] = now_time
 
     async def receive_payload(self, payload):
         if not hasattr(payload, "guild_id"):
@@ -100,7 +101,13 @@ class ReactionRoles(ExtendedCog):
         # if the reaction is just the bot reacting to itself, or if the message isnt from the bot, or if it is DM, skip
         if message.author.id != self.bot.user.id or payload.user_id == self.bot.user.id:
             raise NoPrivateMessage()
-        return message, payload.emoji, payload.member
+
+        if payload.member is None:
+            ctx = await self.bot.get_context(message)
+            member = await MemberConverter().convert(ctx, str(payload.user_id))
+            return message, payload.emoji, member, ctx
+        else:
+            return message, payload.emoji, payload.member
 
     async def get_live_listener(self, ctx, message, emoji):
         live_listener = in_live_listeners(message, self.live_listeners)
@@ -130,7 +137,7 @@ class ReactionRoles(ExtendedCog):
         try:
             message, emoji, member = await self.receive_payload(payload)
             self.apply_cooldown(message, payload.member)
-        except (NoPrivateMessage, CommandOnCooldown):
+        except (NoPrivateMessage, BadArgument):
             return
         ctx = await self.bot.get_context(message)
 
@@ -150,28 +157,65 @@ class ReactionRoles(ExtendedCog):
             await member.add_roles(_object)
         elif _type == "profile":
             roles = member.roles
+            member_role_ids = [role.id for role in roles]
             for role_id in _object["profile_roles"]:
                 try:
-                    roles.append(await RoleConverter().convert(ctx, str(role_id)))
+                    if role_id not in member_role_ids:
+                        roles.append(await RoleConverter().convert(ctx, str(role_id)))
                 except RoleNotFound:
                     pass
 
-            await member.edit(
-                roles=roles
-            )
+            await member.edit(roles=roles)
 
         await dm(
             member,
             embed=EmbedFactory(
                 {
-                    "title": "Reaction Role Profile Assigned",
-                    "description": f"Successfully assigned {_type} \"{_object['name'] if _type == 'profile' else _object.name}\".",
+                    "title": f"Reaction {_type.capitalize()} Assigned",
+                    "description": f"**Successfully assigned {_type} \"{_object['name'] if _type == 'profile' else _object.name}\"**\nDepending on your roles prior to this, nothing may have changed.",
                     "color": "success",
                 }
             ),
         )
 
-        # check if the message that was reacted to is in the live listeners dictionary
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, payload):
+        try:
+            message, emoji, member, ctx = await self.receive_payload(payload)
+            self.apply_cooldown(message, member)
+        except (NoPrivateMessage, CommandOnCooldown):
+            return
+
+        _type, _object = await self.get_live_listener(ctx, message, emoji)
+
+        if _type == None:
+            return dm(
+                member,
+                embed=EmbedFactory(
+                    {
+                        "description": f"The requested role or profile was unable to be removed, likely because it no longer exists. Ask a server administrator for more information.",
+                    },
+                    error=True,
+                ),
+            )
+        elif _type == "role":
+            await member.remove_roles(_object)
+        elif _type == "profile":
+            roles = [
+                role for role in member.roles if role.id not in _object["profile_roles"]
+            ]
+            await member.edit(roles=roles)
+
+        await dm(
+            member,
+            embed=EmbedFactory(
+                {
+                    "title": f"Reaction {_type.capitalize()} Removed",
+                    "description": f"**Successfully removed {_type} \"{_object['name'] if _type == 'profile' else _object.name}\".**\nDepending on your roles prior to this, nothing may have changed.",
+                    "color": "success",
+                }
+            ),
+        )
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
