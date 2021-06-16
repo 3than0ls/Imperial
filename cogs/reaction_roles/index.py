@@ -74,22 +74,23 @@ class ReactionRoles(ExtendedCog):
         firecord.rr_create(guild_id, channel_id, message_id, rr_info)
 
     def apply_cooldown(
-        self, message, member
+        self, message, member, emoji
     ):  # check if the user is on reaction role cooldown
         now_time = datetime.now()
         if (
-            member.id in self.cache[message.guild.id]["rr"][message.id]
+            member.id in self.cache[message.guild.id]["rr"][message.id][emoji]
             and (
-                now_time - self.cache[message.guild.id]["rr"][message.id][member.id]
+                now_time
+                - self.cache[message.guild.id]["rr"][message.id][emoji][member.id]
             ).total_seconds()
             < 5
         ):
             # user has reacted to this within the last 5 seconds, just ignore and
             raise BadArgument(
-                "literally the most scuffed and dumbly hacky way because i'm too lazy to create a custom error"
+                "Reaction role cooldown error raised. literally the most scuffed and dumbly hacky way because i'm too lazy to create a custom error"
             )
         else:
-            self.cache[message.guild.id]["rr"][message.id][member.id] = now_time
+            self.cache[message.guild.id]["rr"][message.id][emoji][member.id] = now_time
 
     async def receive_payload(self, payload):
         if not hasattr(payload, "guild_id"):
@@ -136,7 +137,7 @@ class ReactionRoles(ExtendedCog):
     async def on_raw_reaction_add(self, payload):
         try:
             message, emoji, member = await self.receive_payload(payload)
-            self.apply_cooldown(message, payload.member)
+            self.apply_cooldown(message, payload.member, emoji)
         except (NoPrivateMessage, BadArgument):
             return
         ctx = await self.bot.get_context(message)
@@ -182,8 +183,8 @@ class ReactionRoles(ExtendedCog):
     async def on_raw_reaction_remove(self, payload):
         try:
             message, emoji, member, ctx = await self.receive_payload(payload)
-            self.apply_cooldown(message, member)
-        except (NoPrivateMessage, CommandOnCooldown):
+            self.apply_cooldown(message, member, emoji)
+        except (NoPrivateMessage, BadArgument):
             return
 
         _type, _object = await self.get_live_listener(ctx, message, emoji)
@@ -247,10 +248,11 @@ class ReactionRoles(ExtendedCog):
         self,
         ctx,
         role_or_profile: typing.Union[discord.Role, str],
-        channel: typing.Optional[discord.TextChannel] = None,
         emoji: typing.Optional[
             typing.Union[discord.Emoji, discord.PartialEmoji, str]
         ] = None,
+        channel: typing.Optional[discord.TextChannel] = None,
+        description: typing.Optional[str] = "",
     ):
         # check and validate all the parameters
         if channel is None:
@@ -258,7 +260,9 @@ class ReactionRoles(ExtendedCog):
         if emoji is None:
             emoji = random_circle_emoji()
 
-        await validate_params(ctx, self.command_info, emoji, role_or_profile)
+        await validate_params(
+            ctx, self.command_info, emoji, role_or_profile, description
+        )
 
         is_role = isinstance(role_or_profile, discord.Role)
         _type = "role" if is_role else "profile"
@@ -269,6 +273,7 @@ class ReactionRoles(ExtendedCog):
                 formatting_data={
                     "emoji": emoji,
                     "name": role_or_profile.mention if is_role else role_or_profile,
+                    "description": description,
                     "_type": _type,
                 },
             )
@@ -298,8 +303,6 @@ class ReactionRoles(ExtendedCog):
         inputs = [input for input in args if input]
         individual_args = "".join(inputs).split(",")
 
-        econvert = EmojiConverter().convert
-        peconvert = PartialEmojiConverter().convert
         rconvert = RoleConverter().convert
 
         if channel is None:
@@ -308,37 +311,41 @@ class ReactionRoles(ExtendedCog):
         rr_info = {}
         temp = {}
         for arg in individual_args:
-            emoji, rr_info_assigned = arg.split("/")
-
             try:
-                emoji = await econvert(ctx, emoji)
-            except EmojiNotFound:
-                try:
-                    emoji = await peconvert(ctx, emoji)
-                except:
-                    pass
+                rr_info_assigned, *arg_args = arg.split("/")
+                description = ""
+                if len(arg_args) > 1:
+                    description = arg_args[1]
+                emoji = arg_args[0]
+            except:
+                raise BadArgument(self.command_info["errors"]["InvalidArgs"].format())
 
-            await validate_params(ctx, self.command_info, emoji, rr_info_assigned)
+            await validate_params(
+                ctx, self.command_info, emoji, rr_info_assigned, description
+            )
 
             data = {}
 
             if firecord.profile_exists(ctx.guild.id, rr_info_assigned):
                 data["type"] = "profile"
                 data["id"] = rr_info_assigned
+                data["description"] = description
             else:
                 role = await rconvert(ctx, str(rr_info_assigned))
                 temp[emoji] = role
                 data["type"] = "role"
                 data["id"] = role.id
+                data["description"] = description
             rr_info[str(emoji)] = data
 
-        description = (
-            "**React with the emoji to get the correlated role or profile.**\n\n"
-        )
-        description += "\n\n".join(
-            f"{emoji} - {('Role: **' + temp[emoji].mention) if info['type'] == 'role' else ('Profile: **' + str(info['id']))}**"
-            for emoji, info in rr_info.items()
-        )
+        description = "**React with the emoji to get the associated role or profile.**"
+        for emoji, info in rr_info.items():
+            added = "\n\n"
+            added += f"{emoji} - {('Role: **' + temp[emoji].mention) if info['type'] == 'role' else ('Profile: **' + str(info['id']))}**"
+            if rr_info[emoji]["description"]:
+                added += f'\n{rr_info[emoji]["description"]}'
+            description += added
+
         message = await channel.send(
             embed=EmbedFactory(
                 {**self.command_info["embed"], "description": description},

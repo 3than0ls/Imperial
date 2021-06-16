@@ -3,6 +3,7 @@ import random
 import discord
 from discord.ext.commands.converter import EmojiConverter, RoleConverter
 from discord.ext.commands.errors import BadArgument, EmojiNotFound, RoleNotFound
+from emoji import UNICODE_EMOJI
 
 
 def random_circle_emoji(emojis=["🟠", "🟣", "🟤", "🔵", "🟡", "🟢", "⚪", "🔴"]):
@@ -30,16 +31,20 @@ def in_live_listeners(message, live_listeners):
     return None
 
 
-async def validate_params(ctx, command_info, emoji, thing):
+async def validate_params(ctx, command_info, emoji, thing, description):
+    if len(description) >= 100:
+        raise BadArgument(command_info["errors"]["InvalidDescription"].format())
     emoji_flag = False
-    # here we need to check if the supplied emoji is a standard, and if so, skip all these steps below
+    # here we need to check if we can convert the emoji and use it, or alternatively if it's a string if it's a unicode emoji, and if none of those pass
+    # set emoji_flag to True which raises an error later
     if isinstance(emoji, discord.Emoji):
         if not emoji.is_usable():
             emoji_flag = True
     elif isinstance(emoji, discord.PartialEmoji):
         emoji_flag = True
-    elif isinstance(emoji, str):  # default standard string emoji
-        pass
+    elif isinstance(emoji, str):
+        if emoji not in UNICODE_EMOJI["en"]:
+            emoji_flag = True
 
     if emoji_flag:
         raise BadArgument(command_info["errors"]["InvalidEmoji"].format(emoji=emoji))

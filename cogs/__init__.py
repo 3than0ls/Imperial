@@ -1,9 +1,5 @@
-import json
 import os
 from pathlib import Path
-
-import discord
-from discord.ext import commands
 
 
 def cogs_list():

@@ -185,7 +185,11 @@ class Firecord:
         )
 
     def rr_delete(self, guild_id: int, channel_id: int, message_id: int):
-        """deletes a rr_info entry from firebase"""
+        """
+        deletes a rr_info entry from firebase
+        any reaction roles that may have been deleted on discord will remain on firebase when bot is offline
+        may also occur if it is a bulk delete as it may not trigger on_raw_message_delete
+        """
         ref, *_ = self.use_guild(guild_id=guild_id)
         rr_info = ref.collection("reaction_roles").document(
             f"{channel_id}-{message_id}"

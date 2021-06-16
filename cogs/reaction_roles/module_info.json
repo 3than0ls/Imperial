@@ -1,46 +1,54 @@
 {
     "name": "Reaction Roles",
-    "description": "Allow server members to react to messages to receive roles or profiles.",
+    "description": "Allow server members to react to messages to receive roles or profiles. ",
     "commands": {
         "reaction_role": {
             "title": "React for a role",
             "description": "React to a message to receieve a single role or profile. This is reversible by removing the reaction. This does not work if the bot is offline. Deleting the reaction role message removes it from the bot's database.",
             "params": {
-                "role_or_profile": "The role or profile to assign",
+                "role_or_profile": "The role or profile to assign.",
+                "emoji": "The emoji that users react to for the specified role or profile. Defaults to a random colored circle emoji",
                 "channel": "The channel to send the reaction role message in. Defaults to the channel the command was invoked in",
-                "emoji": "The emoji that users react to for the specified role or profile"
+                "description": "A small amount of description text (100 characters or less) that is included in the reaction role message. Must be wrapped in quotes to work properly"
             },
             "usage": {
-                "{prefix}reaction_role @test_role 🟠 #other_channel": "Creates a reaction role message in #other_channel to assign @test_role if the user reacts with 🟠",
-                "{prefix}reaction_role @test_role": "Creates a reaction role message in the invoked channel to assign @test_role if the user reacts with a randomly picked colored circle emoji"
+                "{prefix}reaction_role @test_role :orange_circle: #other_channel": "Creates a reaction role message in #other_channel to assign @test_role if the user reacts with :orange_circle:",
+                "{prefix}reaction_role @test_role": "Creates a reaction role message in the invoked channel to assign @test_role if the user reacts with a randomly picked colored circle emoji",
+                "{prefix}reaction_role @test_role :orange_circle: \"Get the test role!\"": "Does the same as above, but includes a description in the reaction role message."
             },
             "embed": {
-                "description": "React with {emoji} to get the {name} {_type}!"
+                "description": "**React with {emoji} to get the {name} {_type}!**\n{description}"
             },
+            "guide": "If using a profile, note that profiles roles are only added and do not replace all of the member's previous roles.",
             "errors": {
                 "InvalidArg": "The role or profile \"{arg}\" was not found in this server. Perhaps a spelling mistake?",
                 "InvalidRole": "The role or profile {role_mention} is not a valid role that can be assigned.",
-                "InvalidEmoji": "The emoji {emoji} is not an emoji that I can use."
+                "InvalidEmoji": "The emoji \"{emoji}\" is not an emoji that I can use.",
+                "InvalidDescription": "The given description was too long to be included. Please make the description less than 100 characters."
             }
         },
         "reaction_menu": {
             "title": "Reaction Menu",
             "description": "",
             "params": {
-                "*args": "A list of emoji and profile/role pairs seperated by commas. Example: 🟠/@orange_circle_role, 🟤/brown_profile",
+                "args": "A list of role/profile, emoji, and optional description (100 characters or less) groups seperated by commas. Example: @orange_circle_role / :orange_circle:, brown_profile / :brown_circle: / Optional description, @blue_circle_role / :blue_circle:",
                 "channel": "The channel to send the reaction role message in. Defaults to the channel the command was invoked in"
             },
             "usage": {
-                ">rm 🟠/@orange_circle_role, 🟤/brown_profile": "Creates a reaction menu with the role @test2 associated with the 🟠, and the profile test associated with the 🟤 emoji"
+                ">rm @orange_circle_role / :orange_circle:, brown_profile / :brown_circle:": "Creates a reaction menu with the role @test2 associated with the :orange_circle:, and the profile test associated with the :brown_circle: emoji",
+                ">rm @orange_circle_role / :orange_circle: / Gives a role!, brown_profile / :brown_circle: / Adds a profile!": "Does the same as above, but includes a description in the reaction role message."
             },
             "embed": {
                 "title": "Reaction Menu",
                 "description": ""
             },
+            "guide": "If using a profile, note that profiles roles are only added and do not replace all of the member's previous roles.",
             "errors": {
                 "InvalidArg": "The role or profile \"{arg}\" was not found in this server. Perhaps a spelling mistake?",
+                "InvalidArgs": "The given arguments were unable to be interpreted/understood. Did you format them incorrectly? Run the help on this command to view correct formatting and usage.",
                 "InvalidRole": "The role {role_mention} is not a valid role that can be assigned.",
-                "InvalidEmoji": "The emoji {emoji} is not an emoji that I can use."
+                "InvalidEmoji": "The emoji \"{emoji}\" is not an emoji that I can use.",
+                "InvalidDescription": "The given description was too long to be included. Please make the description less than 100 characters."
             }
         }
     }
