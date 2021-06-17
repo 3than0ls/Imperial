@@ -1,8 +1,3 @@
-import os
-import sys
-import time
-
-import discord
 from dotenv import load_dotenv
 
 from client import Client

@@ -140,7 +140,7 @@ class Profile(ExtendedCog):
         await ctx.invoke(self.bot.get_command("profile _list"))
 
     @has_access()
-    @profile.command(require_var_positional=True, aliases=["give"])
+    @profile.command(require_var_positional=True, aliases=["replace"])
     async def assign(self, ctx, profile_name, *members):
         # handle/process/filter members
         member_objs = []
@@ -184,7 +184,7 @@ class Profile(ExtendedCog):
         )
 
     @has_access()
-    @profile.command(require_var_positional=True)
+    @profile.command(require_var_positional=True, aliases=["give"])
     async def add(self, ctx, profile_name, *members):
         """adds the profile roles to a member as opposed to replacing the members roles like how assign does"""
         # handle/process/filter members
@@ -234,6 +234,53 @@ class Profile(ExtendedCog):
         )
 
     @has_access()
+    @profile.command(require_var_positional=True, aliases=["subtract"])
+    async def remove(self, ctx, profile_name, *members):
+        """removes all roles from the given profile from the members given"""
+        # handle/process/filter members
+        member_objs = []
+        for member in members:
+            try:
+                member_obj = await MemberConverter().convert(ctx, member)
+            except commands.errors.MemberNotFound:
+                raise commands.BadArgument(
+                    self.commands_info["profile"]["subcommands"]["assign"]["errors"][
+                        "MemberError"
+                    ].format(member=member)
+                )
+            member_objs.append(member_obj)
+
+        profile = firecord.profile_get(ctx.guild.id, profile_name)
+        if profile is None:
+            raise commands.BadArgument(
+                self.commands_info["profile"]["subcommands"]["add"]["errors"][
+                    "ProfileError"
+                ].format(profile_name=profile_name, prefix=ctx.prefix)
+            )
+        profile = profile.to_dict()
+        # for each member mentioned edit their roles
+        for member_obj in member_objs:
+            await member_obj.edit(
+                roles=[
+                    role
+                    for role in member_obj.roles
+                    if role.id not in profile["profile_roles"]
+                ]
+            )
+
+        await ctx.send(
+            embed=EmbedFactory(
+                self.commands_info["profile"]["subcommands"]["remove"]["embed"],
+                formatting_data={
+                    "profile_name": profile["name"],
+                    "members": proper(
+                        [member_obj.mention for member_obj in member_objs]
+                    ),
+                },
+            )
+        )
+
+    @has_access()
     @profile.command(require_var_positional=True, aliases=["roles"])
     async def info(self, ctx, profile_name):
         profile = firecord.profile_get(ctx.guild.id, profile_name)
@@ -272,7 +319,7 @@ class Profile(ExtendedCog):
         )
 
     @has_access()
-    @profile.command(require_var_positional=True, aliases=["remove", "erase"])
+    @profile.command(require_var_positional=True, aliases=["erase"])
     async def delete(self, ctx, profile_name):
         profile = firecord.profile_get(ctx.guild.id, profile_name)
 

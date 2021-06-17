@@ -4,12 +4,18 @@
     "commands": {
         "profile": {
             "usage": {
-                "{prefix}profile": "View more information about the profile module and its subcommands."
+                "{prefix}profile": "View more information about the profile module and its subcommands.",
+                "{prefix}profile create test @Member#0001": "Create a new profile called \"test\" consisting of the roles the Member currently has.",
+                "{prefix}profile create test2 @role1 @role2 @role3": "Create a profile called \"test2\" consisting of the three given roles.",
+                "{prefix}profile info test": "Gives information about profile test, such as the roles in that profile.",
+                "{prefix}profile delete test2": "Delete profile test2, if it exists.",
+                "{prefix}profile assign test2 @Member#0002 @Member#0003": "Assign roles from profile test2, if it exists, to the two given members, replacing their previous roles.",
+                "{prefix}profile add test @Member#0004": "Give roles from profile test to the given member, on top of their current roles.",
+                "{prefix}profile remove test @Member#0004 @Member#0005": "Removes roles in profile test from the given members."
             },
             "description": "View information about profile subcommands. Profiles are not stored on the server or on Discord, but rather on the bot.\n**Most commands for the Profile module are subcommands of this command. Run this command to view more information about them.**",
             "embed": {
                 "title": "Profiles",
-                
                 "description": "Profiles are server specific groups of roles that you can create and assign to member. This makes it more convenient when assigning multiple roles to users that frequently have roles removed or changed, or users that leave or are kicked but rejoin often.",
                 "fields": [
                     {
@@ -25,6 +31,11 @@
                     {
                         "name": "__**Add profiles: `{prefix}profile assign [profile_name] [members]`**__",
                         "value": "Adding profiles will give a user all the roles inside a profile on top of the roles a user already has.\n",
+                        "inline": false
+                    },
+                    {
+                        "name": "__**Remove profiles: `{prefix}profile assign [profile_name] [members]`**__",
+                        "value": "Remove roles from given members that are also in the given profile.\n",
                         "inline": false
                     },
                     {
@@ -76,7 +87,18 @@
                 "add": {
                     "embed": {
                         "title": "Profile Added To Member(s)",
-                        "description": "Profile **{profile_name}** has been added to {members}, on top of their previous roles.",
+                        "description": "Roles from profile **{profile_name}** has been added to {members}, on top of their previous roles.",
+                        "color": "success"
+                    },
+                    "errors": {
+                        "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?\nRun `{prefix}profile list` to get a list of existing profiles.",
+                        "MemberError": "Please specify valid members to assign profiles to. The provided value \"{member}\" is not a valid member/mention/name/user ID."
+                    }
+                },
+                "remove": {
+                    "embed": {
+                        "title": "Profile Removed from Member(s)",
+                        "description": "Any roles in profile **{profile_name}** has been removed from {members}.",
                         "color": "success"
                     },
                     "errors": {
@@ -120,11 +142,13 @@
                         "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?\nRun `{prefix}profile list` to get a list of existing profiles."
                     }
                 }
-            }
+            },
+            "guide": "Assigning profiles to members that already have all the profile roles will have no effect."
         },
         "profiles": {
             "usage": {
                 "{prefix}profiles": "View all profiles in this server."
+                
             },
             "description": "Lists profiles in the server. Synonymous to running `{prefix}profile list`."
         }
