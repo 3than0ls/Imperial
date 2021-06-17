@@ -5,15 +5,11 @@ import discord
 from discord.errors import Forbidden
 from discord.ext import commands
 from discord.ext.commands.converter import (
-    EmojiConverter,
     MemberConverter,
-    PartialEmojiConverter,
     RoleConverter,
 )
 from discord.ext.commands.errors import (
     BadArgument,
-    CommandOnCooldown,
-    EmojiNotFound,
     NoPrivateMessage,
     RoleNotFound,
 )

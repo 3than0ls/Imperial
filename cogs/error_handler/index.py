@@ -34,7 +34,7 @@ class ErrorHandler(ExtendedCog):
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
 
-        ignored = (commands.CommandNotFound,)
+        ignored = (commands.CommandNotFound, commands.NoPrivateMessage)
 
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
@@ -44,8 +44,17 @@ class ErrorHandler(ExtendedCog):
         if isinstance(error, ignored):
             return
 
-        elif isinstance(error, commands.NoPrivateMessage):
-            return
+        elif isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(
+                embed=EmbedFactory(
+                    {
+                        "description": f":alarm_clock: This command is on cooldown for you. Please wait {str(round(error.retry_after, 2))} seconds.",
+                        "color": "cooldown",
+                    },
+                    error=True,
+                    error_command_string=f">{ctx.invoked_with}",
+                )
+            )
 
         elif isinstance(error, commands.CheckFailure):
             await ctx.send(

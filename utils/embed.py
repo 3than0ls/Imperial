@@ -18,11 +18,13 @@ class EmbedFactory(Embed):
                 data["color"] = 16715054
             elif data["color"] == "confirm":
                 data["color"] = 15329284
+            elif data["color"] == "cooldown":
+                data["color"] = 15571792
 
         if error:
-            if not hasattr(data, "color"):
+            if "color" not in data:
                 data["color"] = 16715054
-            if not hasattr(data, "title"):
+            if "title" not in data:
                 data["title"] = (
                     "An Error has occured."
                     if error_command_string is None
