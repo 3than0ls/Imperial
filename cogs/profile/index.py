@@ -1,9 +1,7 @@
-import discord
 from discord.ext import commands
 from discord.ext.commands.converter import MemberConverter, UserConverter
 from cogs.profile.helper import (  # pylint: disable=import-error
     convert_to_roles,
-    role_filter,
     validate_convert_roles,
 )
 from firecord import firecord  # pylint: disable=import-error

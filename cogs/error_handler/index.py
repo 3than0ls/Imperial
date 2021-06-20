@@ -1,9 +1,7 @@
 import logging
-import pathlib
 import sys
 import traceback
 
-import discord
 from discord.ext import commands
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error

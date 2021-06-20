@@ -5,16 +5,17 @@ verify_ssl = true
 
 [dev-packages]
 black = "*"
+pylint = "*"
 
 [packages]
 discord-py = "*"
 python-dotenv = "*"
-pylint = "*"
 firebase-admin = "*"
 google-cloud-firestore = "*"
 pydictionary = "*"
 udpy = "*"
 emoji = "*"
+simpleeval = "*"
 
 [requires]
 python_version = "3.8"

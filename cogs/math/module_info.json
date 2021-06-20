@@ -1,0 +1,17 @@
+{
+    "name": "Math",
+    "description": "Calculate basic math",
+    "commands": {
+        "calculate": {
+            "embed": {
+                "title": "Evaluation",
+                "description": "**Raw input from {author}:**\n```{raw}```\n**Evaluation of the following input:**\n```py\n{expression}\n= {output}```"
+            },
+            "errors": {
+                "SyntaxError": "A syntax error has occured. More information show below:\n{err_info}",
+                "FunctionNotDefined": "Function is not defined",
+                "NumberTooHigh": "The value you want to evaluate is too either too large to be reasonably calculated or too large to display."
+            }
+        }
+    }
+}
