@@ -16,7 +16,7 @@ class Dev(ExtendedCog):
 
     @ExtendedCog.listener(name="on_message")
     async def on_message(self, message):
-        if message.author.id == self.bot.user.id:
+        if message.author.id == self.bot.user.id and not message.author.bot:
             return
 
         if str(message.author.id) == os.environ["OWNER_UID"]:

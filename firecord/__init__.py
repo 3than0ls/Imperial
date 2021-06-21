@@ -198,3 +198,5 @@ class Firecord:
 
 
 firecord = Firecord()
+
+# firecord.create_new_setting()

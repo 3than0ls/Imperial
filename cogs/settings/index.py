@@ -81,11 +81,15 @@ class Settings(ExtendedCog):
 
         # validate user input
         if not validation_rules[setting_name](value):
-            raise commands.BadArgument(
-                self.commands_info["settings"]["subcommands"]["set"]["errors"][
-                    "InvalidArgument"
-                ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
-            )
+            capitalized_value = value.capitalize()
+            if not validation_rules[setting_name](capitalized_value):
+                raise commands.BadArgument(
+                    self.commands_info["settings"]["subcommands"]["set"]["errors"][
+                        "InvalidArgument"
+                    ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
+                )
+            else:
+                value = capitalized_value
 
         firecord.set_guild_data(ctx.guild.id, {setting_name: value})
 

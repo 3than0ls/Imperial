@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
-from utils.info import get_module_info  # pylint: disable=import-error
 from utils.pagination import pagination  # pylint: disable=import-error
 from utils.regexp import pascal_to_words  # pylint: disable=import-error
 from firecord import firecord  # pylint: disable=import-error
@@ -15,7 +14,7 @@ class Help(ExtendedCog):
 
     @ExtendedCog.listener(name="on_message")
     async def on_message(self, message):
-        if message.author.id == self.bot.user.id:
+        if message.author.id == self.bot.user.id and not message.author.bot:
             return
 
         if (
@@ -97,7 +96,6 @@ class Help(ExtendedCog):
                     module_name=module_name
                 )
             )
-
         await pagination(
             ctx,
             EmbedFactory(

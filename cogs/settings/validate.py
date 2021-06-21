@@ -12,6 +12,11 @@ def _security(value):
     return value in ["none", "server_manager", "admin", "owner"]
 
 
+def _automath(value):
+    # same as writing value == "none" or value == ...
+    return value in ["Yes", "No"]
+
+
 validation_rules = {
     setting_name: globals()[f"_{setting_name}"]
     for setting_name in DEFAULT_CONFIG.keys()

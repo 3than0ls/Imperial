@@ -16,13 +16,11 @@ math_funcs = [
     "cos",
     "cosh",
     "degrees",
-    "e",
     "factorial",
     "floor",
     "hypot",
     "log",
     "log10",
-    "pi",
     "pow",
     "radians",
     "sin",
@@ -32,8 +30,11 @@ math_funcs = [
     "tanh",
 ]
 math_funcs = {func: getattr(math, func) for func in math_funcs}
-builtin_funcs = ["abs", "round"]
+builtin_funcs = ["abs"]
 builtin_funcs = {func: getattr(builtins, func) for func in builtin_funcs}  # type: ignore
+
+funcs = {**math_funcs, **builtin_funcs}
+symbols = {symbol: getattr(math, symbol) for symbol in ["e", "pi"]}
 
 
 def simple_eval():
@@ -41,15 +42,12 @@ def simple_eval():
 
     # remove some ops that we won't use, and add ^ as a power operator
     remove_ops = [ast.Is, ast.IsNot, ast.NotIn, ast.FloorDiv]
-    add_ops = {ast.BitXor: safe_power, "x": safe_mult}
     for op in remove_ops:
         del seval.operators[op]
-    seval.operators.update(add_ops)
     # pprint.PrettyPrinter(indent=3).pprint(seval.operators)
 
     # remove the default functions, because they're not too relevant, and replace them with ones we want
-    funcs = {**math_funcs, **builtin_funcs, "foo": lambda: "bar"}
-    seval.functions = funcs
+    seval.functions = {**funcs, **symbols}
     # pprint.PrettyPrinter(indent=3).pprint(seval.functions)
 
     remove_nodes = [ast.Slice, ast.IfExp, ast.JoinedStr, ast.Subscript, ast.Index]

@@ -1,4 +1,5 @@
 {
     "prefix": ">",
-    "security": "admin"
+    "security": "admin",
+    "automath": "No"
 }

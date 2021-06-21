@@ -84,6 +84,24 @@
                     "value": "Change security level by using: `{prefix}settings set security [value]`."
                 }
             ]
+        },
+        "automath": {
+            "name": "AutoMath",
+            "description": "Whether or not the bot will automatically detect and answer simple math expressions (similar to `{prefix}calculate`).",
+            "fields": [
+                {
+                    "name": "Settings Type",
+                    "value": "String - Has to be one of the following:\n - `Yes` (automatically respond) \n -  `No` (Do not automatically respond)."
+                },
+                {
+                    "name": "Current Setting Value",
+                    "value": "Current security level: `{guild_data[automath]}`."
+                },
+                {
+                    "name": "Update This Setting",
+                    "value": "Change security level by using: `{prefix}settings set automath [value]`."
+                }
+            ]
         }
     }
 }

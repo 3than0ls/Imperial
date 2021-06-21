@@ -35,7 +35,7 @@ class Client(commands.Bot):
 
     async def on_message(self, message):
         # maybe move below to a decorator check
-        if message.author.id == self.user.id:
+        if message.author.id == self.user.id and not message.author.bot:
             return
 
         ctx = await self.get_context(message)

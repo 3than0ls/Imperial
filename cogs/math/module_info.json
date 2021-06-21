@@ -1,17 +1,38 @@
 {
     "name": "Math",
-    "description": "Calculate basic math",
+    "description": "Calculate basic math.",
     "commands": {
         "calculate": {
+            "description": "Calculate basic math expressions. To have the bot automatically detect and answer expressions it can solve, change the setting `automath` to \"Yes\".",
             "embed": {
                 "title": "Evaluation",
                 "description": "**Raw input from {author}:**\n```{raw}```\n**Evaluation of the following input:**\n```py\n{expression}\n= {output}```"
             },
-            "errors": {
-                "SyntaxError": "A syntax error has occured. More information show below:\n{err_info}",
-                "FunctionNotDefined": "Function is not defined",
-                "NumberTooHigh": "The value you want to evaluate is too either too large to be reasonably calculated or too large to display."
+            "params": {
+                "expression": "A simple math expression (algebraic equations will not work). Some mathematical functions are allowed. Values that are too large will throw errors."
+            },
+            "usage": {
+                "{prefix}calculate 63/9 + 12": "Evaluates to 19",
+                "{prefix}calculate 3x(4+sqrt(25))^8": "Evaluates to 129140163"
+            },
+            "guide": "To view the list of available functions, run `{prefix}math_functions`."
+        },
+        "math_functions": {
+            "description": "List of available math functions.",
+            "embed": {
+                "title": "List of available math functions.",
+                "description": "{math_funcs}"
+            },
+            "usage": {
+                "{prefix}math_functions": "Lists math functions used in this module."
             }
         }
+    },
+    "errors": {
+        "SyntaxError": "A syntax error has occured. More information show below:\n{err_info}",
+        "FunctionNotDefined": "Function \"{func_name}\" is not defined",
+        "NumberTooHigh": "The value you want to evaluate is too either too large to be reasonably calculated or too large to display.",
+        "ZeroDivisionError": "An attempt to divide by zero was made.",
+        "GeneralError": "An error has occured. No more information can be given."
     }
 }
