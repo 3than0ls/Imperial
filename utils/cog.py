@@ -25,7 +25,6 @@ class ExtendedCog(commands.Cog):
 
     @commands.Cog.listener(name="on_ready")
     async def set_cooldowns(self):
-        cooldowned_commands = []
         for _command in self.get_commands():
             command = self.bot.remove_command(_command.name)
             cooldown_info = self.module_info["commands"][command.name].get(
@@ -35,6 +34,8 @@ class ExtendedCog(commands.Cog):
                     "type": ExtendedCog.DEFAULT_CMD_CD_TYPE,
                 },
             )
+
+            command.cog = _command.cog
 
             self.bot.add_command(
                 commands.cooldown(
@@ -47,10 +48,9 @@ class ExtendedCog(commands.Cog):
                 )(command)
             )
 
-        # for command in cooldowned_commands:
-        #     self.bot.add_command(command)
-
-        self.__cog_commands__ = cooldowned_commands
+        # print(dir(self.bot.get_cog("Math")))
+        # print(self.bot.get_cog("Math").__cog_commands__)
+        # print(self.bot.get_cog("Math").get_commands())
 
     @property
     def module_info(self):

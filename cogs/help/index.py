@@ -96,6 +96,7 @@ class Help(ExtendedCog):
                     module_name=module_name
                 )
             )
+
         await pagination(
             ctx,
             EmbedFactory(
