@@ -58,11 +58,3 @@ def simple_eval():
     }
     # pprint.PrettyPrinter(indent=3).pprint(seval.nodes)
     return seval
-
-
-def can_int(value):
-    try:
-        int(value)
-        return True
-    except ValueError:
-        return False

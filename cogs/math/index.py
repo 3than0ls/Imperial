@@ -81,6 +81,9 @@ class Math(ExtendedCog):
 
                 expression, output = self.eval(message.content)
 
+                if expression == "0-0":
+                    return
+
                 await ctx.send(
                     embed=EmbedFactory(
                         self.command_info["commands"]["calculate"]["embed"],
@@ -113,7 +116,7 @@ class Math(ExtendedCog):
         )
 
     @commands.command(require_var_positional=True)
-    async def calculate(self, ctx, *args):
+    async def calculate(self, ctx, *expression):
         raw = ctx.message.content.split(" ", 1)[1]
         # it should work the same by joining args?
         expression, output = self.eval(raw)
@@ -127,6 +130,82 @@ class Math(ExtendedCog):
                     "expression": expression,
                     "output": output,
                 },
+            )
+        )
+
+    @commands.command(aliases=["bin"])
+    async def binary(self, ctx, number):
+        try:
+            binary = format(int(number), "b")
+        except ValueError:
+            raise commands.BadArgument(
+                self.module_info["errors"]["ConversionError"].format(
+                    value=number, type="number", convert_type="binary"
+                )
+            )
+        if len(binary) > 800:
+            raise NumberTooHigh()
+        await ctx.send(
+            embed=EmbedFactory(
+                self.command_info["embed"],
+                formatting_data={"num": number, "binary_num": binary},
+            )
+        )
+
+    @commands.command(aliases=["unbin"])
+    async def unbinary(self, ctx, binary):
+        if len(binary) > 800:
+            raise NumberTooHigh()
+        try:
+            number = int(binary, 2)
+        except ValueError:
+            raise commands.BadArgument(
+                self.module_info["errors"]["ConversionError"].format(
+                    value=binary, type="binary", convert_type="number"
+                )
+            )
+        await ctx.send(
+            embed=EmbedFactory(
+                self.command_info["embed"],
+                formatting_data={"num": number, "binary_num": binary},
+            )
+        )
+
+    @commands.command(aliases=["hex"])
+    async def hexadecimal(self, ctx, number):
+        try:
+            hexadecimal = format(int(number), "x")
+        except ValueError:
+            raise commands.BadArgument(
+                self.module_info["errors"]["ConversionError"].format(
+                    value=number, type="number", convert_type="hexadecimal"
+                )
+            )
+        if len(hexadecimal) > 800:
+            raise NumberTooHigh()
+        await ctx.send(
+            embed=EmbedFactory(
+                self.command_info["embed"],
+                formatting_data={"num": number, "hex_num": hexadecimal},
+            )
+        )
+
+    @commands.command(aliases=["unhex"])
+    async def unhexadecimal(self, ctx, hexadecimal):
+        if len(hexadecimal) > 800:
+            raise NumberTooHigh()
+        try:
+            number = int(hexadecimal, 16)
+        except ValueError:
+            raise commands.BadArgument(
+                self.module_info["errors"]["ConversionError"].format(
+                    value=hexadecimal, type="hexadecimal", convert_type="number"
+                )
+            )
+        await ctx.send(
+            embed=EmbedFactory(
+                self.command_info["embed"],
+                formatting_data={"num": number, "hex_num": hexadecimal},
             )
         )
 

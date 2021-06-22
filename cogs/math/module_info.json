@@ -26,6 +26,46 @@
             "usage": {
                 "{prefix}math_functions": "Lists math functions used in this module."
             }
+        },
+        "binary": {
+            "description": "Convert a number to a binary number.",
+            "embed": {
+                "title": "Number to Binary Converter",
+                "description": "`{num}` as a binary number is:\n```py\n{binary_num}```"
+            },
+            "usage": {
+                "{prefix}binary 10": "1010"
+            }
+        },
+        "unbinary": {
+            "description": "Convert a binary number to a number.",
+            "embed": {
+                "title": "Binary to Number Converter",
+                "description": "`{binary_num}` as a regular number is:\n```py\n{num}```"
+            },
+            "usage": {
+                "{prefix}unbinary 1010": "10"
+            }
+        },
+        "hexadecimal": {
+            "description": "Convert a number to a hexidecimal number.",
+            "embed": {
+                "title": "Number to Hexidecimal Converter",
+                "description": "`{num}` as a binary number is:\n```py\n0x{hex_num}```"
+            },
+            "usage": {
+                "{prefix}hexadecimal 10": "1010"
+            }
+        },
+        "unhexadecimal": {
+            "description": "Convert a hexidecimal number to a number.",
+            "embed": {
+                "title": "Hexidecimal to Number Converter",
+                "description": "`0x{hex_num}` as a regular number is:\n```py\n{num}```"
+            },
+            "usage": {
+                "{prefix}unhexadecimal 1010": "10"
+            }
         }
     },
     "errors": {
@@ -33,6 +73,7 @@
         "FunctionNotDefined": "Function \"{func_name}\" is not defined",
         "NumberTooHigh": "The value you want to evaluate is too either too large to be reasonably calculated or too large to display.",
         "ZeroDivisionError": "An attempt to divide by zero was made.",
-        "GeneralError": "An error has occured. No more information can be given."
+        "GeneralError": "An error has occured. No more information can be given.",
+        "ConversionError": "The value \"{value}\" is not a {type}, and could not be converted to a {convert_type}."
     }
 }
