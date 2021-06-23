@@ -1,5 +1,4 @@
 import inspect
-import asyncio
 import os
 
 from discord.ext import commands
@@ -47,10 +46,6 @@ class ExtendedCog(commands.Cog):
                     ),
                 )(command)
             )
-
-        # print(dir(self.bot.get_cog("Math")))
-        # print(self.bot.get_cog("Math").__cog_commands__)
-        # print(self.bot.get_cog("Math").get_commands())
 
     @property
     def module_info(self):

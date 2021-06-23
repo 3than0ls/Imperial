@@ -2,7 +2,7 @@ import numbers
 import re
 from decimal import MAX_EMAX, MIN_EMIN, Decimal, DivisionByZero
 
-from cogs.math.helper import simple_eval, funcs, symbols  # pylint: disable=import-error
+from cogs.math.helper import funcs, simple_eval, symbols  # pylint: disable=import-error
 from discord.ext import commands
 from firecord import firecord  # pylint: disable=import-error
 from simpleeval import FunctionNotDefined, NumberTooHigh

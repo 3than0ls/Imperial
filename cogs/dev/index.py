@@ -21,13 +21,20 @@ class Dev(ExtendedCog):
 
         if str(message.author.id) == os.environ["OWNER_UID"]:
             if message.content == "--quit" or message.content == "-Q":
-                print("shutting down")
+                logMsg = (
+                    f"----- SHUTDOWN COMMAND ISSUED BY USER {message.author.id}  -----"
+                )
+                print(logMsg)
+                logging.info(logMsg)
                 await self.bot.close()
                 quit()
 
             elif message.content == "--restart" or message.content == "-R":
-                print("restarting")
-                logging.error("--- RESTARTING ---")
+                logMsg = (
+                    f"----- RESTART COMMAND ISSUED BY USER {message.author.id} -----"
+                )
+                print(logMsg)
+                logging.info(logMsg)
                 await self.bot.close()
                 os.execl(sys.executable, *([sys.executable] + sys.argv))
 

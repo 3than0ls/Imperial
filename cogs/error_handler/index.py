@@ -1,10 +1,10 @@
-import logging
 import sys
 import traceback
 
 from discord.ext import commands
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
+from utils.logger import log  # pylint: disable=import-error
 
 
 class ErrorHandler(ExtendedCog):
@@ -87,7 +87,7 @@ class ErrorHandler(ExtendedCog):
                 )
             else:
                 # All other Errors not returned come here. And we can just print the default TraceBack.
-                logging.error(error)
+                log.error(log)
                 print(
                     "Ignoring exception in command {}:".format(ctx.command),
                     file=sys.stderr,

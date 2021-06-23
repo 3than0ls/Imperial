@@ -1,8 +1,8 @@
 import ast
-import math
 import builtins
+import math
 
-from simpleeval import SimpleEval, safe_power, safe_mult
+from simpleeval import SimpleEval
 
 math_funcs = [
     "acos",
@@ -44,11 +44,9 @@ def simple_eval():
     remove_ops = [ast.Is, ast.IsNot, ast.NotIn, ast.FloorDiv]
     for op in remove_ops:
         del seval.operators[op]
-    # pprint.PrettyPrinter(indent=3).pprint(seval.operators)
 
     # remove the default functions, because they're not too relevant, and replace them with ones we want
     seval.functions = {**funcs, **symbols}
-    # pprint.PrettyPrinter(indent=3).pprint(seval.functions)
 
     remove_nodes = [ast.Slice, ast.IfExp, ast.JoinedStr, ast.Subscript, ast.Index]
     seval.nodes = {
@@ -56,5 +54,4 @@ def simple_eval():
         for node_hash, node in seval.nodes.items()
         if node_hash not in remove_nodes
     }
-    # pprint.PrettyPrinter(indent=3).pprint(seval.nodes)
     return seval

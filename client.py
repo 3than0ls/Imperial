@@ -1,4 +1,5 @@
 import datetime
+from utils.logger import log
 import os
 
 from discord.ext import commands
@@ -29,9 +30,9 @@ class Client(commands.Bot):
         self.run(os.environ["BOT_TOKEN"])
 
     async def on_ready(self):
-        print(
-            f"{self.user} is connected and ready active on time: {datetime.datetime.now()}"
-        )
+        logMsg = f"{self.user} is connected and ready active on time: {datetime.datetime.now()}"
+        print(logMsg)
+        log.info(logMsg)
 
     async def on_message(self, message):
         # maybe move below to a decorator check

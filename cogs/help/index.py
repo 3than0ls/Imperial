@@ -1,11 +1,12 @@
 import os
+
 import discord
 from discord.ext import commands
+from firecord import firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.pagination import pagination  # pylint: disable=import-error
 from utils.regexp import pascal_to_words  # pylint: disable=import-error
-from firecord import firecord  # pylint: disable=import-error
 
 
 class Help(ExtendedCog):
