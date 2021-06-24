@@ -79,6 +79,18 @@ class Settings(ExtendedCog):
     async def set(self, ctx, setting_name, *, value):
         setting_name, _ = self.check_settings_exists(setting_name)
 
+        if setting_name == "archivecategory":
+            category = discord.utils.find(
+                lambda c: c.name.lower() == value.lower(), ctx.guild.categories
+            )
+            if category is not None:
+                value = category.name
+            else:
+                raise commands.BadArgument(
+                    self.commands_info["settings"]["subcommands"]["set"]["errors"][
+                        "InvalidArgument"
+                    ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
+                )
         # validate user input
         if not validation_rules[setting_name](value):
             capitalized_value = value.capitalize()

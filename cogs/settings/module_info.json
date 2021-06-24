@@ -10,16 +10,23 @@
                 "fields": [
                     {
                         "name": ":grey_exclamation: Prefix",
-                        "value": "Current prefix: `{guild_data[prefix]}`\n`{prefix}settings info prefix`.",
-                        "inline": true
+                        "value": "Current prefix: `{guild_data[prefix]}`\n`{prefix}settings info prefix`."
                     },
                     {
-                        "name": ":shield:  Security Level",
-                        "value": "Current security level: `{guild_data[security]}`\n`{prefix}settings info security`.",
-                        "inline": true
+                        "name": ":lock:  Security Level",
+                        "value": "Current security level: `{guild_data[security]}`\n`{prefix}settings info security`."
+                    },
+                    {
+                        "name": ":books:  Archive Category",
+                        "value": "Current archive category: `{guild_data[archivecategory]}`\n`{prefix}settings info archivecategory`."
+                    },
+                    {
+                        "name": ":memo:  AutoMath",
+                        "value": "Is AutoMath active?: `{guild_data[automath]}`\n`{prefix}settings info automath`."
                     }
                 ]
             },
+            "guide": "To change a setting's value, run `{prefix}settings set [setting] [new_value]`\nTo get information about a setting, run `{prefix}settings info [setting]`.\nTo reset the value of a setting, run `{prefix}settings reset [setting]`.",
             "errors": {
                 "BadArgument": "Setting \"{setting_name}\" is not an existing or defined setting."
             },
@@ -51,11 +58,11 @@
     "settings": {
         "prefix": {
             "name": "Prefix",
-            "description": "The command prefix is what the message content must start with to have a command invoked. It cannot be an empty string (it cannot be nothing).",
+            "description": "The command prefix is what the message content must start with to have a command invoked. It cannot be an empty text.",
             "fields": [
                 {
                     "name": "Settings Type",
-                    "value": "String - Has to be 1 to 10 characters long."
+                    "value": "Text - Has to be 1 to 10 characters long."
                 },
                 {
                     "name": "Current Setting Value",
@@ -73,7 +80,7 @@
             "fields": [
                 {
                     "name": "Settings Type",
-                    "value": "String - Has to be one of the following:\n - `none` (anyone can access all bot commands, not reccomended)\n -  `server_manager` (only members with the server manager permission can use)\n -  `admin` (only server administrators)\n -  `owner` (only server owner can use)."
+                    "value": "Text - Has to be one of the following:\n - `none` (anyone can access all bot commands, not reccomended)\n -  `server_manager` (only members with the server manager permission can use)\n -  `admin` (only server administrators)\n -  `owner` (only server owner can use)."
                 },
                 {
                     "name": "Current Setting Value",
@@ -91,15 +98,33 @@
             "fields": [
                 {
                     "name": "Settings Type",
-                    "value": "String - Has to be one of the following:\n - `Yes` (automatically respond) \n -  `No` (Do not automatically respond)."
+                    "value": "Text - Has to be one of the following:\n - `Yes` (automatically respond) \n -  `No` (Do not automatically respond)."
                 },
                 {
                     "name": "Current Setting Value",
-                    "value": "Current security level: `{guild_data[automath]}`."
+                    "value": "Is AutoMath enabled?: `{guild_data[automath]}`."
                 },
                 {
                     "name": "Update This Setting",
-                    "value": "Change security level by using: `{prefix}settings set automath [value]`."
+                    "value": "Change whether AutoMath is enabled by using: `{prefix}settings set automath [value]`."
+                }
+            ]
+        },
+        "archivecategory": {
+            "name": "Archive Category",
+            "description": "The category in which archived channels are stored in. Archived channels will have their permissions synced with the category, so for archiving, the permissions ideally will restrict members from seeing the category. The bot will create a category the first time a channel is archived.",
+            "fields": [
+                {
+                    "name": "Category Name",
+                    "value": "Text - The full name of the category"
+                },
+                {
+                    "name": "Current Setting Value",
+                    "value": "Current archive category: `{guild_data[archivecategory]}`."
+                },
+                {
+                    "name": "Update This Setting",
+                    "value": "Change the archive category by using: `{prefix}settings set archivecategory [value]`."
                 }
             ]
         }

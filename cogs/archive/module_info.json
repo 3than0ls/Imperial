@@ -1,0 +1,46 @@
+{
+    "name": "Archive",
+    "description": "Archive channels, hiding them from non-administrators but not deleting them.",
+    "commands": {
+        "archive": {
+            "description": "Archive a channel into a category, syncing the channel's permission with the category.",
+            "params": {
+                "channel": "The channel to archive. Must be a text channel. Can be left unspecified, defaulting to the channel the command was run in.",
+                "category": "The category to archive the channel in. Can be left unspecified, and will default to the category specified in settings."
+            },
+            "usage": {
+                "{prefix}archive #test": "Archives the channel #test to the default archived category specified in the bot's settings, likely named \"Archived\"",
+                "{prefix}archive #test \"A Cool Category\"": "Archives #test in the category \"A Cool Category\" (must be in quotes if it has several words).",
+                "{prefix}archive": "Archives the channel the command was run in to the default archived category."
+            },
+            "embed": {
+                "title": "Archived Channel",
+                "description": "Successfully archived channel {channel} in category {category}.",
+                "color": "success"
+            },
+            "guide": "When joining a server, the bot will have a default archive category of N/A. When not specifying a archive category, the bot will default to the archive category in settings, and if the stored category name does not exist, or is N/A, it will create a new category named \"Archived\" and store archived channels there by default."
+        },
+        "unarchive": {
+            "description": "Re-open or unarchive a channel into a category, attempting to sync the channel's permission with the category.",
+            "params": {
+                "channel": "The channel to reopen. Must be a text channel. Can be left unspecified, defaulting to the channel the command was run in.",
+                "category": "The category to archive the channel in. Can be left unspecified, reopening it in the category it is located in."
+            },
+            "usage": {
+                "{prefix}unarchive #test Information": "Moves #test in the category \"Information\", syncing permissions.",
+                "{prefix}unarchive \"A Cool Category\"": "Moves the channel the command was run in to \"A Cool Category\", syncing permissions.",
+                "{prefix}unarchive": "Makes the channel the command was run in category-less, and also removes any permissions restricting the regular member from viewing it."
+            },
+            "embed": {
+                "title": "Unarchived Channel",
+                "description": "Successfully reopened channel {channel}{category_message}.",
+                "color": "success"
+            },
+            "guide": "Attempting to reopen a channel as category-less is impossible, because it will just default to the category the channel is located in."
+        }
+    },
+    "errors": {
+        "InvalidCategory": "The inputted \"{category}\" is not a valid category."
+    },
+    "guide": "The bot will sync the specified channel's permissions with the category it is being archived in.\n"
+}

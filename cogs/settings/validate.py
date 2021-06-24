@@ -13,8 +13,12 @@ def _security(value):
 
 
 def _automath(value):
-    # same as writing value == "none" or value == ...
     return value in ["Yes", "No"]
+
+
+def _archivecategory(value):
+    # its just the name of a category, so it can be dang near anything. but we have to check if its a valid category in the set subcommand
+    return value
 
 
 validation_rules = {

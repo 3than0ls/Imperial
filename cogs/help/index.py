@@ -174,7 +174,7 @@ class Help(ExtendedCog):
                     else "No usage examples provided.",
                     "guide": command_info.get(
                         "guide", "No guide or extra information is available."
-                    ),
+                    ).format(prefix=ctx.prefix),
                 },
             )
         )
