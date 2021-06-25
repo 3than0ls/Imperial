@@ -1,0 +1,6 @@
+{
+    "name": "Jail",
+    "description": "Restrict members to only be able to see and type in one channel (nicknamed \"jailing\").",
+    "commands": {
+    }
+}

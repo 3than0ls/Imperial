@@ -18,11 +18,11 @@
                     },
                     {
                         "name": ":books:  Archive Category",
-                        "value": "Current archive category: `{guild_data[archivecategory]}`\n`{prefix}settings info archivecategory`."
+                        "value": "Current archive category: `{guild_data[archivecategory][1]}`\n`{prefix}settings info archivecategory`."
                     },
                     {
                         "name": ":memo:  AutoMath",
-                        "value": "Is AutoMath active?: `{guild_data[automath]}`\n`{prefix}settings info automath`."
+                        "value": "Is AutoMath active?: `{guild_data[automath][1]}`\n`{prefix}settings info automath`."
                     }
                 ]
             },
@@ -102,7 +102,7 @@
                 },
                 {
                     "name": "Current Setting Value",
-                    "value": "Is AutoMath enabled?: `{guild_data[automath]}`."
+                    "value": "Is AutoMath enabled?: `{guild_data[automath][1]}`."
                 },
                 {
                     "name": "Update This Setting",
@@ -120,7 +120,7 @@
                 },
                 {
                     "name": "Current Setting Value",
-                    "value": "Current archive category: `{guild_data[archivecategory]}`."
+                    "value": "Current archive category: `{guild_data[archivecategory][1]}`."
                 },
                 {
                     "name": "Update This Setting",

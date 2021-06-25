@@ -3,6 +3,7 @@ import re
 from decimal import MAX_EMAX, MIN_EMIN, Decimal, DivisionByZero
 
 from cogs.math.helper import funcs, simple_eval, symbols  # pylint: disable=import-error
+from cogs.settings.convert import to_client  # pylint: disable=import-error
 from discord.ext import commands
 from firecord import firecord  # pylint: disable=import-error
 from simpleeval import FunctionNotDefined, NumberTooHigh
@@ -71,16 +72,16 @@ class Math(ExtendedCog):
             return
 
         if "automath" not in self.cache[message.guild.id]:
-            self.cache[message.guild.id]["automath"] = firecord.get_guild_data(
-                message.guild.id
-            )["automath"]
+            self.cache[message.guild.id]["automath"] = to_client.automath(
+                {}, firecord.get_guild_data(message.guild.id)["automath"]
+            )[0]
 
         if self.cache[message.guild.id]["automath"] == "Yes":
             try:
                 ctx = await self.bot.get_context(message)
-
                 expression, output = self.eval(message.content)
 
+                # a silly emoticon-ish thing that needs to be an exception
                 if expression == "0-0":
                     return
 

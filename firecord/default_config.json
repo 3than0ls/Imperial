@@ -1,6 +1,6 @@
 {
     "prefix": ">",
     "security": "admin",
-    "automath": "No",
+    "automath": false,
     "archivecategory": "N/A"
 }

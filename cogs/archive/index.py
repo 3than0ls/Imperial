@@ -1,8 +1,8 @@
 import typing
 
 import discord
+from cogs.settings.convert import to_client, to_store  # pylint: disable=import-error
 from discord.ext import commands
-from discord.ext.commands.converter import CategoryChannelConverter
 from firecord import firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
@@ -22,7 +22,10 @@ class Archive(ExtendedCog):
                 )
             },
         )
-        firecord.set_guild_data(ctx.guild.id, {"archivecategory": category.name})
+        firecord.set_guild_data(
+            ctx.guild.id,
+            {"archivecategory": to_store.archivecategory(ctx, category)},
+        )
         return category
 
     @commands.command(aliases=["hide"])
@@ -37,17 +40,14 @@ class Archive(ExtendedCog):
 
         if category is None:
             # get the default category ID (or None) from settings
-            archivecategory = firecord.get_guild_data(ctx.guild.id).get(
-                "archivecategory", "N/A"
+            archivecategory = to_client.archivecategory(
+                ctx, firecord.get_guild_data(ctx.guild.id)["archivecategory"]
             )
-            if archivecategory == "N/A":
+            if archivecategory is None:
                 category = await self.create_archive_category(ctx)
             else:
-                category = discord.utils.find(
-                    lambda c: c.name.lower() == archivecategory.lower(),
-                    ctx.guild.categories,
-                )
-                # category was renamed or deleted, just create a new one
+                category = archivecategory[2]
+                # category was deleted, just create a new one
                 if category is None:
                     category = await self.create_archive_category(ctx)
         else:

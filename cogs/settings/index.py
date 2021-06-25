@@ -1,6 +1,10 @@
 import discord
 from checks.has_access import has_access  # pylint: disable=import-error
-from cogs.settings.validate import validation_rules  # pylint: disable=import-error
+from cogs.settings.convert import (  # pylint: disable=import-error
+    ToStoreError,
+    to_client,
+    to_store,
+)
 from discord.ext import commands
 from firecord import DEFAULT_CONFIG, firecord  # pylint: disable=import-error
 from utils.cog import ExtendedCog  # pylint: disable=import-error
@@ -44,7 +48,10 @@ class Settings(ExtendedCog):
     )
     async def settings(self, ctx):
         if ctx.subcommand_passed is None:
-            guild_data = firecord.get_guild_data(ctx.guild.id)
+            guild_data = {
+                setting: to_client.convert(ctx, setting, value)
+                for setting, value in firecord.get_guild_data(ctx.guild.id).items()
+            }
             await ctx.send(
                 embed=EmbedFactory(
                     self.command_info["embed"],
@@ -59,7 +66,10 @@ class Settings(ExtendedCog):
     @settings.command(require_var_positional=True, aliases=["get"])
     async def info(self, ctx, *, setting_name):
         setting_name, setting_info = self.check_settings_exists(setting_name)
-        guild_data = firecord.get_guild_data(ctx.guild.id)
+        guild_data = {
+            setting: to_client.convert(ctx, setting, value)
+            for setting, value in firecord.get_guild_data(ctx.guild.id).items()
+        }
         await ctx.send(
             embed=EmbedFactory(
                 {
@@ -91,17 +101,19 @@ class Settings(ExtendedCog):
                         "InvalidArgument"
                     ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
                 )
-        # validate user input
-        if not validation_rules[setting_name](value):
-            capitalized_value = value.capitalize()
-            if not validation_rules[setting_name](capitalized_value):
-                raise commands.BadArgument(
-                    self.commands_info["settings"]["subcommands"]["set"]["errors"][
-                        "InvalidArgument"
-                    ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
+
+        try:
+            value = to_store.convert(ctx, setting_name, value)
+        except ToStoreError:
+            raise commands.BadArgument(
+                self.commands_info["settings"]["subcommands"]["set"]["errors"][
+                    "InvalidArgument"
+                ].format(
+                    value=to_client.convert(setting_name, value),
+                    setting_name=setting_name,
+                    prefix=ctx.prefix,
                 )
-            else:
-                value = capitalized_value
+            )
 
         firecord.set_guild_data(ctx.guild.id, {setting_name: value})
 

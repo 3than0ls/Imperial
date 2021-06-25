@@ -54,7 +54,7 @@
                 "description": "`{num}` as a binary number is:\n```py\n0x{hex_num}```"
             },
             "usage": {
-                "{prefix}hexadecimal 10": "1010"
+                "{prefix}hexadecimal 10": "0xa"
             }
         },
         "unhexadecimal": {
@@ -64,7 +64,7 @@
                 "description": "`0x{hex_num}` as a regular number is:\n```py\n{num}```"
             },
             "usage": {
-                "{prefix}unhexadecimal 1010": "10"
+                "{prefix}unhexadecimal 0xa": "10"
             }
         }
     },
