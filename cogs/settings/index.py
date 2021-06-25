@@ -88,20 +88,6 @@ class Settings(ExtendedCog):
     @settings.command(require_var_positional=True)
     async def set(self, ctx, setting_name, *, value):
         setting_name, _ = self.check_settings_exists(setting_name)
-
-        if setting_name == "archivecategory":
-            category = discord.utils.find(
-                lambda c: c.name.lower() == value.lower(), ctx.guild.categories
-            )
-            if category is not None:
-                value = category.name
-            else:
-                raise commands.BadArgument(
-                    self.commands_info["settings"]["subcommands"]["set"]["errors"][
-                        "InvalidArgument"
-                    ].format(value=value, setting_name=setting_name, prefix=ctx.prefix)
-                )
-
         try:
             value = to_store.convert(ctx, setting_name, value)
         except ToStoreError:
