@@ -22,8 +22,8 @@ def invalid_role(role):
 def in_live_listeners(message, live_listeners):
     channel = message.channel
     guild = channel.guild
-    if guild.id in live_listeners.keys() and (
-        live_listener := live_listeners[guild.id].get(
+    if str(guild.id) in live_listeners.keys() and (
+        live_listener := live_listeners[str(guild.id)].get(
             f"{channel.id}-{message.id}", None
         )
     ):
@@ -56,5 +56,5 @@ async def validate_params(ctx, command_info, emoji, thing, description):
                 command_info["errors"]["InvalidRole"].format(role_mention=role.mention)
             )
     except RoleNotFound:
-        if not firecord.profile_exists(ctx.guild.id, thing):
+        if not firecord.profile_exists(str(ctx.guild.id), thing):
             raise BadArgument(command_info["errors"]["InvalidArg"].format(arg=thing))

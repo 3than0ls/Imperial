@@ -1,6 +1,7 @@
 import typing
 
 import discord
+from checks.has_access import has_access  # pylint: disable=import-error
 from cogs.settings.convert import to_client, to_store  # pylint: disable=import-error
 from discord.ext import commands
 from firecord import firecord  # pylint: disable=import-error
@@ -23,11 +24,12 @@ class Archive(ExtendedCog):
             },
         )
         firecord.set_guild_data(
-            ctx.guild.id,
+            str(ctx.guild.id),
             {"archivecategory": to_store.archivecategory(ctx, category)},
         )
         return category
 
+    @has_access()
     @commands.command(aliases=["hide"])
     async def archive(
         self,
@@ -41,7 +43,7 @@ class Archive(ExtendedCog):
         if category is None:
             # get the default category ID (or None) from settings
             archivecategory = to_client.archivecategory(
-                ctx, firecord.get_guild_data(ctx.guild.id)["archivecategory"]
+                ctx, firecord.get_guild_data(str(ctx.guild.id))["archivecategory"]
             )
             if archivecategory is None:
                 category = await self.create_archive_category(ctx)
@@ -79,6 +81,7 @@ class Archive(ExtendedCog):
             )
         )
 
+    @has_access()
     @commands.command(aliases=["unhide", "reopen"])
     async def unarchive(
         self,

@@ -14,10 +14,11 @@ from utils.embed import EmbedFactory  # pylint: disable=import-error
 class Settings(ExtendedCog):
     def __init__(self, bot):
         super().__init__(bot)
+        self.exclude_setting = ["jail"]
 
     @ExtendedCog.listener(name="on_guild_join")
     async def on_guild_join(self, guild):
-        firecord.init_guild(guild.id)
+        firecord.init_guild(str(guild.id))
 
         # try to find a general/chat channel, and invoke help command there.
         if channel := discord.utils.find(
@@ -33,6 +34,7 @@ class Settings(ExtendedCog):
     def check_settings_exists(self, setting_name):
         setting_name = setting_name.lower()
         settings_list = self.module_info["settings"]
+
         if setting_name not in settings_list:
             raise commands.BadArgument(
                 self.commands_info["settings"]["errors"]["BadArgument"].format(
@@ -50,7 +52,7 @@ class Settings(ExtendedCog):
         if ctx.subcommand_passed is None:
             guild_data = {
                 setting: to_client.convert(ctx, setting, value)
-                for setting, value in firecord.get_guild_data(ctx.guild.id).items()
+                for setting, value in firecord.get_guild_data(str(ctx.guild.id)).items()
             }
             await ctx.send(
                 embed=EmbedFactory(
@@ -68,7 +70,7 @@ class Settings(ExtendedCog):
         setting_name, setting_info = self.check_settings_exists(setting_name)
         guild_data = {
             setting: to_client.convert(ctx, setting, value)
-            for setting, value in firecord.get_guild_data(ctx.guild.id).items()
+            for setting, value in firecord.get_guild_data(str(ctx.guild.id)).items()
         }
         await ctx.send(
             embed=EmbedFactory(
@@ -88,6 +90,12 @@ class Settings(ExtendedCog):
     @settings.command(require_var_positional=True)
     async def set(self, ctx, setting_name, *, value):
         setting_name, _ = self.check_settings_exists(setting_name)
+        if setting_name in self.exclude_setting:
+            raise commands.BadArgument(
+                self.commands_info["settings"]["errors"]["Immutable"].format(
+                    setting_name=setting_name, prefix=ctx.prefix
+                )
+            )
         try:
             value = to_store.convert(ctx, setting_name, value)
         except ToStoreError:
@@ -101,14 +109,18 @@ class Settings(ExtendedCog):
                 )
             )
 
-        firecord.set_guild_data(ctx.guild.id, {setting_name: value})
+        if setting_name == "automath":
+            self.bot.cache[str(ctx.guild.id)]["automath"] = value
 
+        firecord.set_guild_data(str(ctx.guild.id), {setting_name: value})
+
+        value = to_client.convert(ctx, setting_name, value)
         await ctx.send(
             embed=EmbedFactory(
-                self.commands_info["settings"]["subcommands"]["set"]["embed"],  # messy
+                self.commands_info["settings"]["subcommands"]["set"]["embed"],
                 formatting_data={
                     "setting_name": setting_name,
-                    "value": value,
+                    "value": value if isinstance(value, str) else value[1],
                 },
             )
         )
@@ -119,7 +131,7 @@ class Settings(ExtendedCog):
         setting_name, _ = self.check_settings_exists(setting_name)
 
         firecord.set_guild_data(
-            ctx.guild.id, {setting_name: DEFAULT_CONFIG[setting_name]}
+            str(ctx.guild.id), {setting_name: DEFAULT_CONFIG[setting_name]}
         )
         await ctx.send(
             embed=EmbedFactory(

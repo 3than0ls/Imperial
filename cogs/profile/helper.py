@@ -64,13 +64,13 @@ async def validate_convert_roles(ctx, profile):
 
     if len(invalid) == len(profile["profile_roles"]):
         # if all roles in a profile are deleted, delete the profile and throw error
-        firecord.profile_delete(ctx.guild.id, profile["name"])
+        firecord.profile_delete(str(ctx.guild.id), profile["name"])
         raise errors.BadArgument(
             f"The profile \"{profile['name']}\" no longer exists. The roles used by this profile have all been deleted, and so the profile was automatically deleted as well."
         )
     else:  # if only some roles are deleted, remove those from the profile on firebase
         firecord.profile_edit_roles(
-            ctx.guild.id, profile["name"], [role.id for role in valid]
+            str(ctx.guild.id), profile["name"], [str(role.id) for role in valid]
         )
 
     return list(set(valid))

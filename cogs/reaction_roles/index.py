@@ -36,7 +36,7 @@ class ReactionRoles(ExtendedCog):
         # validate all listeners in live listeners when on ready
         async def pred(guild_id, rr_id):
             try:
-                guild = self.bot.get_guild(guild_id)
+                guild = self.bot.get_guild(int(guild_id))
                 channel_id, message_id = rr_id.split("-")
                 channel = guild.get_channel(channel_id)
                 if channel is None:
@@ -48,7 +48,7 @@ class ReactionRoles(ExtendedCog):
                 firecord.rr_delete(guild_id, channel_id, message_id)
 
         for guild_id, rr in self.live_listeners.items():
-            asyncio.gather([await pred(guild_id, rr_id) for rr_id in rr.keys()])
+            asyncio.gather([await pred(str(guild_id), rr_id) for rr_id in rr.keys()])
 
     def create_live_listener(self, message: discord.Message, rr_info):
         """
@@ -62,9 +62,9 @@ class ReactionRoles(ExtendedCog):
             }
         }
         """
-        guild_id = message.guild.id
-        channel_id = message.channel.id
-        message_id = message.channel.id
+        guild_id = str(message.guild.id)
+        channel_id = str(message.channel.id)
+        message_id = str(message.channel.id)
 
         self.live_listeners[guild_id][f"{channel_id}-{message_id}"] = rr_info
         firecord.rr_create(guild_id, channel_id, message_id, rr_info)
@@ -74,10 +74,13 @@ class ReactionRoles(ExtendedCog):
     ):  # check if the user is on reaction role cooldown
         now_time = datetime.now()
         if (
-            member.id in self.cache[message.guild.id]["rr"][message.id][emoji]
+            str(member.id)
+            in self.cache[str(message.guild.id)]["rr"][str(message.id)][emoji]
             and (
                 now_time
-                - self.cache[message.guild.id]["rr"][message.id][emoji][member.id]
+                - self.cache[str(message.guild.id)]["rr"][str(message.id)][emoji][
+                    str(member.id)
+                ]
             ).total_seconds()
             < 5
         ):
@@ -86,7 +89,9 @@ class ReactionRoles(ExtendedCog):
                 "Reaction role cooldown error raised. literally the most scuffed and dumbly hacky way because i'm too lazy to create a custom error"
             )
         else:
-            self.cache[message.guild.id]["rr"][message.id][emoji][member.id] = now_time
+            self.cache[str(message.guild.id)]["rr"][str(message.id)][emoji][
+                str(member.id)
+            ] = now_time
 
     async def receive_payload(self, payload):
         if not hasattr(payload, "guild_id"):
@@ -120,7 +125,9 @@ class ReactionRoles(ExtendedCog):
                     )
                     return rr_info["type"], assigned_role
                 elif rr_info["type"] == "profile":
-                    assigned_profile = firecord.profile_get(ctx.guild.id, rr_info["id"])
+                    assigned_profile = firecord.profile_get(
+                        str(ctx.guild.id), rr_info["id"]
+                    )
                     if assigned_profile is None:
                         # profile doesnt exist, just raise keyerror to be handled later
                         raise KeyError()
@@ -154,7 +161,7 @@ class ReactionRoles(ExtendedCog):
             await member.add_roles(_object)
         elif _type == "profile":
             roles = member.roles
-            member_role_ids = [role.id for role in roles]
+            member_role_ids = [str(role.id) for role in roles]
             for role_id in _object["profile_roles"]:
                 try:
                     if role_id not in member_role_ids:
@@ -199,7 +206,9 @@ class ReactionRoles(ExtendedCog):
             await member.remove_roles(_object)
         elif _type == "profile":
             roles = [
-                role for role in member.roles if role.id not in _object["profile_roles"]
+                role
+                for role in member.roles
+                if str(role.id) not in _object["profile_roles"]
             ]
             await member.edit(roles=roles)
 
@@ -220,20 +229,22 @@ class ReactionRoles(ExtendedCog):
             return
 
         if (
-            payload.guild_id in self.live_listeners
+            str(payload.guild_id) in self.live_listeners
             and f"{payload.channel_id}-{payload.message_id}"
-            in self.live_listeners[payload.guild_id]
+            in self.live_listeners[str(payload.guild_id)]
         ):
-            del self.live_listeners[payload.guild_id][
+            del self.live_listeners[str(payload.guild_id)][
                 f"{payload.channel_id}-{payload.message_id}"
             ]
-            firecord.rr_delete(payload.guild_id, payload.channel_id, payload.message_id)
+            firecord.rr_delete(
+                str(payload.guild_id), str(payload.channel_id), str(payload.message_id)
+            )
 
     def initialize_rr(self, ctx, channel, message, rr_info):
-        firecord.rr_create(ctx.guild.id, channel.id, message.id, rr_info)
-        if ctx.guild.id not in self.live_listeners:
-            self.live_listeners[ctx.guild.id] = {}
-        self.live_listeners[ctx.guild.id][f"{channel.id}-{message.id}"] = rr_info
+        firecord.rr_create(str(ctx.guild.id), str(channel.id), str(message.id), rr_info)
+        if str(ctx.guild.id) not in self.live_listeners:
+            self.live_listeners[str(ctx.guild.id)] = {}
+        self.live_listeners[str(ctx.guild.id)][f"{channel.id}-{message.id}"] = rr_info
 
     @has_access()
     @commands.command(
@@ -283,7 +294,7 @@ class ReactionRoles(ExtendedCog):
             {
                 str(emoji): {
                     "type": _type,
-                    "id": role_or_profile.id if is_role else role_or_profile,
+                    "id": str(role_or_profile.id) if is_role else role_or_profile,
                 }
             },
         )
@@ -322,7 +333,7 @@ class ReactionRoles(ExtendedCog):
 
             data = {}
 
-            if firecord.profile_exists(ctx.guild.id, rr_info_assigned):
+            if firecord.profile_exists(str(ctx.guild.id), rr_info_assigned):
                 data["type"] = "profile"
                 data["id"] = rr_info_assigned
                 data["description"] = description
@@ -330,7 +341,7 @@ class ReactionRoles(ExtendedCog):
                 role = await rconvert(ctx, str(rr_info_assigned))
                 temp[emoji] = role
                 data["type"] = "role"
-                data["id"] = role.id
+                data["id"] = str(role.id)
                 data["description"] = description
             rr_info[str(emoji)] = data
 

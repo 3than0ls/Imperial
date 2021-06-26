@@ -26,9 +26,8 @@ def init_converters(self):
 
     def wrapper(setting):
         def returner(value):
-            # log.info(f"A default converter (and maybe also validator) was called. \tSetting: {setting}\tValue: {input}")
-            print(
-                f"A default converter (and maybe also validator) was called. Setting: {setting} - Value: {value}"
+            log.info(
+                f"A default converter (and maybe also validator) was called. \tSetting: {setting}\tValue: {input}"
             )
             return value
 
@@ -95,10 +94,10 @@ class ToStore:
     def automath(self, ctx: commands.Context, value: str):
         """take a value similar to yes, y, true, no, n, false. convert it into boolean True or False"""
         converted = value.lower()
-        if converted in ["yes", "y", "true", "enable"]:
+        if converted in ["yes", "y", "true", "enable", "enabled"]:
             converted = True
             return converted
-        elif converted in ["no", "n", "false", "disable"]:
+        elif converted in ["no", "n", "false", "disable", "disabled"]:
             converted = False
             return converted
         else:
@@ -115,16 +114,22 @@ class ToStore:
             # if converted is still none, attempt again but using lowercase matching
             if converted is None:
                 converted = discord.utils.find(
-                    lambda cat: cat.name.lower() == value.name.lower(),
+                    lambda cat: cat.name.lower() == value.lower(),
                     ctx.guild.categories,
                 )
         elif isinstance(value, discord.CategoryChannel):
             converted = value
 
         if converted is not None:
-            return converted.id
+            return str(converted.id)
         else:
             raise ToStoreError("archivecategory", value)
+
+    # def jail(self, ctx: commands.Context, value: dict):
+    #     """dict of a jail_channel id and jail_role id. convert to dict of jail_channel discord Channel and jail_role Role"""
+    #     pass
+    #     else:
+    #         raise ToStoreError("archivecategory", value)
 
 
 class ToClient:
@@ -161,12 +166,44 @@ class ToClient:
         self, ctx: commands.Context, value: int
     ) -> typing.Union[None, typing.Tuple[int, str, discord.CategoryChannel]]:
         """convert ID to a discord Category. if value is N/A (not set), return None. otherwise, returns a tuple, first being raw int ID from firestore, second being the name of the category, and third being the discord Category object"""
+        category = discord.utils.find(
+            lambda cat: str(cat.id) == value, ctx.guild.categories
+        )
 
-        if value == "N/A":
-            return None
+        if value == "N/A" or category is None:
+            return (value, "N/A", None)
 
-        category = discord.utils.get(ctx.guild.categories, id=value)
         return (value, category.name, category)
+
+    def jail(
+        self, ctx: commands.Context, value: dict
+    ) -> typing.Union[None, typing.Tuple[int, discord.TextChannel]]:
+        """convert text channel ID into text channel object. returns a tuple of (id from firestore, discord TextChannel object)"""
+        converted = {}
+        display = {}
+        jail_channel = (
+            discord.utils.find(
+                lambda c: str(c.id) == value["jail_channel"], ctx.guild.text_channels
+            )
+            or "N/A"
+        )
+        jail_role = (
+            discord.utils.find(
+                lambda r: str(r.id) == value["jail_role"],
+                ctx.guild.roles,
+            )
+            or "N/A"
+        )
+
+        converted["jail_channel"] = jail_channel
+        converted["jail_role"] = jail_role
+        display["jail_channel"] = (
+            jail_channel if jail_channel == "N/A" else jail_channel.mention
+        )
+        display["jail_role"] = jail_role if jail_role == "N/A" else jail_role.mention
+
+        # print(value, converted, display)
+        return (value, converted, display)
 
 
 to_store = ToStore()

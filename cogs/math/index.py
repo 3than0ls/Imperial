@@ -71,12 +71,12 @@ class Math(ExtendedCog):
         if message.author.id == self.bot.user.id or message.author.bot:
             return
 
-        if "automath" not in self.cache[message.guild.id]:
-            self.cache[message.guild.id]["automath"] = to_client.automath(
-                {}, firecord.get_guild_data(message.guild.id)["automath"]
+        if "automath" not in self.cache[str(message.guild.id)]:
+            self.cache[str(message.guild.id)]["automath"] = to_client.automath(
+                {}, firecord.get_guild_data(str(message.guild.id))["automath"]
             )[0]
 
-        if self.cache[message.guild.id]["automath"] == "Yes":
+        if self.cache[str(message.guild.id)]["automath"]:
             try:
                 ctx = await self.bot.get_context(message)
                 expression, output = self.eval(message.content)
@@ -87,7 +87,7 @@ class Math(ExtendedCog):
 
                 await ctx.send(
                     embed=EmbedFactory(
-                        self.command_info["commands"]["calculate"]["embed"],
+                        self.module_info["commands"]["calculate"]["embed"],
                         formatting_data={
                             "raw": message.content,
                             "author": message.author.mention,

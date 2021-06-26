@@ -19,7 +19,7 @@ class Client(commands.Bot):
     def __prefix(self, bot, message):
         try:
             return firecord.prefix_map.get(
-                message.guild.id, DEFAULT_CONFIG.get("prefix", ">")
+                str(message.guild.id), DEFAULT_CONFIG.get("prefix", ">")
             )
         except AttributeError:
             return ">"

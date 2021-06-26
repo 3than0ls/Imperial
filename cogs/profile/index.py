@@ -58,7 +58,7 @@ class Profile(ExtendedCog):
                 )
             )
 
-        if firecord.profile_exists(ctx.guild.id, profile_name):
+        if firecord.profile_exists(str(ctx.guild.id), profile_name):
             if not await confirm(
                 ctx,
                 f'The profile "{profile_name}" already exists. Creating a profile with this name will override and replace the old one. Are you sure you want to proceed?',
@@ -71,10 +71,10 @@ class Profile(ExtendedCog):
         )
 
         firecord.profile_create(
-            ctx.guild.id,
-            ctx.author.id,
+            str(ctx.guild.id),
+            str(ctx.author.id),
             str(profile_name),
-            [role.id for role in set(profile_roles)],
+            [str(role.id) for role in set(profile_roles)],
         )
 
         await ctx.send(
@@ -92,7 +92,7 @@ class Profile(ExtendedCog):
     @profile.command(require_var_positional=True, aliases=["list", "all"])
     async def _list(self, ctx, order="alphabetical"):
         # perhaps a with typing()...
-        profile_list = firecord.profile_list(ctx.guild.id)
+        profile_list = firecord.profile_list(str(ctx.guild.id))
 
         if order == "created" or order == "date":
             profile_list = sorted(profile_list, key=lambda profile: profile["created"])
@@ -154,7 +154,7 @@ class Profile(ExtendedCog):
             member_objs.append(member_obj)
 
         # handle/process/filter profile and profile roles
-        profile = firecord.profile_get(ctx.guild.id, profile_name)
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
         if profile is None:
             raise commands.BadArgument(
                 self.commands_info["profile"]["subcommands"]["assign"]["errors"][
@@ -199,7 +199,7 @@ class Profile(ExtendedCog):
             member_objs.append(member_obj)
 
         # handle/process/filter profile and profile roles
-        profile = firecord.profile_get(ctx.guild.id, profile_name)
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
         if profile is None:
             raise commands.BadArgument(
                 self.commands_info["profile"]["subcommands"]["add"]["errors"][
@@ -248,7 +248,7 @@ class Profile(ExtendedCog):
                 )
             member_objs.append(member_obj)
 
-        profile = firecord.profile_get(ctx.guild.id, profile_name)
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
         if profile is None:
             raise commands.BadArgument(
                 self.commands_info["profile"]["subcommands"]["add"]["errors"][
@@ -262,7 +262,7 @@ class Profile(ExtendedCog):
                 roles=[
                     role
                     for role in member_obj.roles
-                    if role.id not in profile["profile_roles"]
+                    if str(role.id) not in profile["profile_roles"]
                 ]
             )
 
@@ -281,7 +281,7 @@ class Profile(ExtendedCog):
     @has_access()
     @profile.command(require_var_positional=True, aliases=["roles"])
     async def info(self, ctx, profile_name):
-        profile = firecord.profile_get(ctx.guild.id, profile_name)
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
 
         if profile is None:
             raise commands.BadArgument(
@@ -319,7 +319,7 @@ class Profile(ExtendedCog):
     @has_access()
     @profile.command(require_var_positional=True, aliases=["erase"])
     async def delete(self, ctx, profile_name):
-        profile = firecord.profile_get(ctx.guild.id, profile_name)
+        profile = firecord.profile_get(str(ctx.guild.id), profile_name)
 
         if profile is None:
             raise commands.BadArgument(
@@ -332,7 +332,7 @@ class Profile(ExtendedCog):
         if await confirm(
             ctx, f"Are you sure you want to delete the profile **{profile_name}**?"
         ):
-            firecord.profile_delete(ctx.guild.id, profile["name"])
+            firecord.profile_delete(str(ctx.guild.id), profile["name"])
             await ctx.send(
                 embed=EmbedFactory(
                     self.commands_info["profile"]["subcommands"]["delete"]["embed"],

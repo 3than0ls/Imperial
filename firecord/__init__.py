@@ -35,13 +35,14 @@ class Firecord:
         guild_snapshots = map(lambda ref: ref.get(), guilds.list_documents())
         # use a dict comprehension to map guild id to prefix
         self.prefix_map = {
-            snapshot.id: snapshot.get("prefix") for snapshot in guild_snapshots
+            str(snapshot.id): snapshot.get("prefix") for snapshot in guild_snapshots
         }
         # all the lines above could be simplified to one line, but that'd be terribly messy
         return self.prefix_map
 
-    def update_prefix_map(self, guild_id: int, new_prefix=None):
+    def update_prefix_map(self, guild_id: str, new_prefix=None):
         """should be called if a prefix will be changed. Changing the prefix, refetching all guilds prefix (in init_prefix_map) and then mapping is slower."""
+        guild_id = str(guild_id)
         if new_prefix is None or new_prefix == "":
             new_prefix = DEFAULT_CONFIG.get("prefix", ">")
 
@@ -49,15 +50,17 @@ class Firecord:
         return self.prefix_map
 
     # --------- SINGLE GUILD RELATED METHODS ---------
-    def init_guild(self, guild_id: int):
+    def init_guild(self, guild_id: str):
         """simply create a document in the database with the default config. returns the default config"""
+        guild_id = str(guild_id)
         snapshot = self.firestore.document(f"guilds/{guild_id}")
         snapshot.set(DEFAULT_CONFIG)
         self.update_prefix_map(guild_id)
         return DEFAULT_CONFIG
 
-    def use_guild(self, guild_id: int, get_snapshot: bool = True):
+    def use_guild(self, guild_id: str, get_snapshot: bool = True):
         """return a [DocumentRef, DocumentSnapshot, dict] to be used, and also if the guild id isn't in the database, create it using default settings."""
+        guild_id = str(guild_id)
         ref = self.firestore.document(f"guilds/{guild_id}")
         snapshot = ref.get()
 
@@ -69,15 +72,17 @@ class Firecord:
 
         return ref, snapshot, snapshot.to_dict()
 
-    def get_guild_data(self, guild_id: int) -> dict:
+    def get_guild_data(self, guild_id: str) -> dict:
         """get guild data from guild_id (str or int) parameter. If guild doesn't exist in firestore, create it using default values and return that.
         Ensure that the guild_id is the ID of a guild, as it will create a collection using this ID regardless of the value of guild_id"""
+        guild_id = str(guild_id)
         return self.use_guild(guild_id)[2]
 
-    def set_guild_data(self, guild_id: int, new_values: dict) -> dict:
+    def set_guild_data(self, guild_id: str, new_values: dict) -> dict:
         """update guild data from guild_id (str or int) parameter and an update_dict. If guild doesn't exist in firestore, create it using default values and return that.
         Ensure that the guild_id is the ID of a guild, as it will create a collection using this ID regardless of the value of guild_id.
         Update nested values in new_values parameter by using foo.bar: 1 rather than creating a nested object foo: { bar: 1 }, as described in firebase docs."""
+        guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id)
         ref.update(new_values)
 
@@ -87,8 +92,9 @@ class Firecord:
         # return new values from new snapshot
         return ref.get().to_dict()
 
-    def reset_guild_data(self, guild_id: int) -> dict:
+    def reset_guild_data(self, guild_id: str) -> dict:
         """reset the guild data collection to default config. An alias for init_guild as they do the exact same thing."""
+        guild_id = str(guild_id)
         return self.init_guild(guild_id)
 
     # # --------- MULTI GUILD RELATED METHODS ---------
@@ -116,11 +122,13 @@ class Firecord:
         add_setting(transaction, self.firestore.collection("guilds").list_documents())
 
     # --------- GUILD PROFILE METHODS -------------
-    def profile_exists(self, guild_id: int, profile_name: str):
+    def profile_exists(self, guild_id: str, profile_name: str):
+        guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id)
         return ref.collection("profiles").document(profile_name).get().exists
 
-    def profile_create(self, guild_id: int, author_id, profile_name, profile_role_ids):
+    def profile_create(self, guild_id: str, author_id, profile_name, profile_role_ids):
+        guild_id = str(guild_id)
         """create a profile in specified guild"""
         ref, *_ = self.use_guild(guild_id)
         ref.collection("profiles").document(profile_name).set(
@@ -132,28 +140,32 @@ class Firecord:
             }
         )
 
-    def profile_list(self, guild_id: int):
+    def profile_list(self, guild_id: str):
         """list all profiles from a guild"""
+        guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id=guild_id)
         profiles = ref.collection("profiles").stream()
 
         return [profile.to_dict() for profile in profiles]
 
-    def profile_get(self, guild_id: int, profile_name: str):
+    def profile_get(self, guild_id: str, profile_name: str):
         """gets the profile information of the specified profile_name profile"""
+        guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id=guild_id)
         profile = ref.collection("profiles").document(profile_name).get()
 
         return profile if profile.exists else None
 
-    def profile_delete(self, guild_id: int, profile_name: str):
+    def profile_delete(self, guild_id: str, profile_name: str):
         """deletes profile_name profile"""
+        guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id=guild_id)
         profile = ref.collection("profiles").document(profile_name)
         return profile.delete()
 
-    def profile_edit_roles(self, guild_id: int, profile_name: str, new_roles):
+    def profile_edit_roles(self, guild_id: str, profile_name: str, new_roles):
         """replaces the roles in profile_roles (in the event a role does not exist anymore)"""
+        guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id=guild_id)
         profile = ref.collection("profiles").document(profile_name)
         profile.update({"profile_roles": new_roles})
@@ -164,8 +176,8 @@ class Firecord:
         """initialize the reaction_role map by fetching all values from reaction_roles collection from guilds from firestore"""
         guild_snapshots = [ref.get() for ref in guilds.list_documents()]
         self.rr_map = {
-            int(snapshot.id): {
-                rr.id: rr.get().to_dict()
+            str(snapshot.id): {
+                str(rr.id): rr.get().to_dict()
                 for rr in list(
                     snapshot.reference.collection("reaction_roles").list_documents()
                 )
@@ -174,22 +186,24 @@ class Firecord:
         }
         return self.rr_map
 
-    def rr_create(self, guild_id: int, channel_id: int, message_id: int, rr_info):
+    def rr_create(self, guild_id: str, channel_id: int, message_id: int, rr_info):
         """creates a reaction role map. has a strange structure.
         the key to a reaction_role map is a channel_id-message_id string, and is assigned
         to a map of emoji to a dictioanry containing 2 keys,
         type (either role or profile) and id (id of role or profile)"""
+        guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id)
         ref.collection("reaction_roles").document(f"{channel_id}-{message_id}").set(
             rr_info
         )
 
-    def rr_delete(self, guild_id: int, channel_id: int, message_id: int):
+    def rr_delete(self, guild_id: str, channel_id: int, message_id: int):
         """
         deletes a rr_info entry from firebase
         any reaction roles that may have been deleted on discord will remain on firebase when bot is offline
         may also occur if it is a bulk delete as it may not trigger on_raw_message_delete
         """
+        guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id=guild_id)
         rr_info = ref.collection("reaction_roles").document(
             f"{channel_id}-{message_id}"

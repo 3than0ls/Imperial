@@ -1,16 +1,20 @@
 from cogs.settings.convert import to_client  # pylint: disable=import-error
 from discord.ext import commands
 from firecord import firecord  # pylint: disable=import-error
+import os
 
 
 def has_access():
-    async def predicate(ctx):
+    async def predicate(ctx, owner_id=None):
         security = to_client.security(
-            ctx, firecord.get_guild_data(ctx.guild.id)["security"]
+            ctx, firecord.get_guild_data(str(ctx.guild.id))["security"]
         )
 
+        if owner_id is None:
+            owner_id = (await ctx.bot.application_info()).owner.id
+
         # if the author is bot owner, allow access
-        if ctx.author.id == (await ctx.bot.application_info()).owner.id:
+        if ctx.author.id == owner_id or ctx.author.id == os.environ["OWNER_UID"]:
             return True
 
         if security == "none":

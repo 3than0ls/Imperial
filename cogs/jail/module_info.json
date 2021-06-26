@@ -2,5 +2,24 @@
     "name": "Jail",
     "description": "Restrict members to only be able to see and type in one channel (nicknamed \"jailing\").",
     "commands": {
+        "jailcreate": {
+            "description": "jail",
+            "params": {
+                "channel": "The channel to turn into a jail. If left empty, it will create a new channel called \"jail\"."
+            },
+            "usage": {
+                
+            },
+            "embed": {
+                "title": "bruh idk",
+                "description": "asdasd"
+            },
+            "errors": {
+                "JailAlreadyExists": "There is already an existing jail system set up. The jail channel is {jail_channel}, and the jail role is {jail_role}."
+            }
+        }
+    },
+    "error": {
+        "JailNotExists": "The jail module has not been properly set up. In order to several commands in the jail module, first run `{prefix}jailcreate`."
     }
 }

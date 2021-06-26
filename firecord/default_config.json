@@ -2,5 +2,9 @@
     "prefix": ">",
     "security": "admin",
     "automath": false,
-    "archivecategory": "N/A"
+    "archivecategory": "N/A",
+    "jail": {
+        "jail_channel": null,
+        "jail_role": null
+    }
 }

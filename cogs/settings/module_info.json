@@ -17,18 +17,23 @@
                         "value": "Current security level: `{guild_data[security]}`\n`{prefix}settings info security`."
                     },
                     {
+                        "name": ":memo:  AutoMath",
+                        "value": "Is AutoMath active?: `{guild_data[automath][1]}`\n`{prefix}settings info automath`."
+                    },
+                    {
                         "name": ":books:  Archive Category",
                         "value": "Current archive category: `{guild_data[archivecategory][1]}`\n`{prefix}settings info archivecategory`."
                     },
                     {
-                        "name": ":memo:  AutoMath",
-                        "value": "Is AutoMath active?: `{guild_data[automath][1]}`\n`{prefix}settings info automath`."
+                        "name": ":no_entry_sign:  Jail",
+                        "value": "Jail Channel: {guild_data[jail][2][jail_channel]}\nJail Role: {guild_data[jail][2][jail_role]}\n`{prefix}settings info jail`."
                     }
                 ]
             },
             "guide": "To change a setting's value, run `{prefix}settings set [setting] [new_value]`\nTo get information about a setting, run `{prefix}settings info [setting]`.\nTo reset the value of a setting, run `{prefix}settings reset [setting]`.",
             "errors": {
-                "BadArgument": "Setting \"{setting_name}\" is not an existing or defined setting."
+                "BadArgument": "Setting \"{setting_name}\" is not an existing or defined setting.",
+                "Immutable": "Setting \"{setting_name}\" cannot be changed through this message. Run `{prefix}settings info {setting_name}` for more information.."
             },
             "subcommands": {
                 "set": {
@@ -109,7 +114,7 @@
                     "value": "Change whether AutoMath is enabled by using: `{prefix}settings set automath [value]`."
                 }
             ]
-        },
+        }, 
         "archivecategory": {
             "name": "Archive Category",
             "description": "The category in which archived channels are stored in. Archived channels will have their permissions synced with the category, so for archiving, the permissions ideally will restrict members from seeing the category. The bot will create a category the first time a channel is archived.",
@@ -125,6 +130,24 @@
                 {
                     "name": "Update This Setting",
                     "value": "Change the archive category by using: `{prefix}settings set archivecategory [value]`."
+                }
+            ]
+        },
+        "jail": {
+            "name": "Jail Settings",
+            "description": "Jail settings, where the jail channel and role are stored. These cannot be modified using `{prefix}settings set jail [value]`, and must be modified using commands from the jail module.",
+            "fields": [
+                {
+                    "name": "Settings Type",
+                    "value": "Jail Channel: Text Channel, the only channel those with the jail role should be able to see and type in.\nJail Role: Role, with restrictions to only see and type in the jail channel."
+                },
+                {
+                    "name": "Current Setting Value",
+                    "value": "Jail Channel: {guild_data[jail][1][jail_channel].mention}\nJail Role: {guild_data[jail][1][jail_role].mention}"
+                },
+                {
+                    "name": "Update This Setting",
+                    "value": "Cannot update these values using `{prefix}settings set jail [value]`. Run `>module jail` for more info on how to set these values."
                 }
             ]
         }
