@@ -1,25 +1,72 @@
 {
     "name": "Jail",
-    "description": "Restrict members to only be able to see and type in one channel (nicknamed \"jailing\").",
+    "description": "Restrict members to only be able to see and type in one channel (nicknamed \"jailing\"). For even more information, read the guide after running `{prefix}help create_jail`",
     "commands": {
-        "jailcreate": {
-            "description": "jail",
+        "create_jail": {
+            "description": "Create a jail channel and jail role.",
             "params": {
-                "channel": "The channel to turn into a jail. If left empty, it will create a new channel called \"jail\"."
+                "channel": "The text channel to turn into a jail. If left empty, it will create a new text channel called \"jail\"."
             },
             "usage": {
-                
+                "{prefix}createjail": "Creates a jail channel."
             },
             "embed": {
-                "title": "bruh idk",
-                "description": "asdasd"
+                "title": "Jail Channel and Role Created.",
+                "description": "Created jail channel {jail_channel}, and a jail role {jail_role}.\n\nTo jail someone, run `{prefix}jail [member]`.",
+                "color": "success"
             },
             "errors": {
-                "JailAlreadyExists": "There is already an existing jail system set up. The jail channel is {jail_channel}, and the jail role is {jail_role}."
-            }
+                "JailAlreadyExists": "There is already an existing jail system set up. The jail channel is {jail_channel}, and the jail role is {jail_role}.\n\nIf you want to delete the jail system, or reset it, run `{prefix}delete_jail`."
+            },
+            "guide": "A jail channel is a text channel that, by default, only administrators and members with the jail role can see and type in. A jail role has permission settings in every channel (voice and text) except the jail channel that disallow them to read or send messages, meaning that jail users will only be able to see the jail channel. The bot will attempt to automatically add these permissions for the jail role when a new channel is created, but is unable to do so if it is offline and a channel is created."
+        },
+        "delete_jail": {
+            "description": "Delete the jail system, including the jail channel and the jail role.",
+            "usage": {
+                "{prefix}delete": "Deletes the jail channel and role from the server."
+            },
+            "embed": {
+                "title": "Jail Channel and Role Deleted.",
+                "description": "Deleted jail channel and jail role.\n\nTo create a jail, run `{prefix}create_jail *[channel]`.",
+                "color": "success"
+            },
+            "guide": "Requires the jail system to be set up or partially set up. Will still run if the jail channel or jail role have been deleted, unlike `{prefix}jail` and `{prefix}unjail`. Run `{prefix}command jail_create` for more information."
+        },
+        "jail": {
+            "description": "Replaces all of a member's roles with the jail role, only letting them see and type in the jail channel.",
+            "params": {
+                "members": "Member(s) to put in jail."
+            },
+            "usage": {
+                "{prefix}jail @Stinker": "Send the member with the mention @Stinker to jail."
+            },
+            "embed": {
+                "title": "Jailed Members",
+                "description": "Replaced all roles for {members} with {jail_role}.\n\nThey can now only see the jail channel {jail_channel}.",
+                "color": "success"
+            },
+            "guide": "To unjail them, run `{prefix}unjail [*members]`. Alternatively, manually re-assign them their previous roles, or a new role, or even assign them a profile using `{prefix}profile assign [profile] [*members]`.\n\nRequires the jail system to be set up. Run `{prefix}command jail_create` for more information."
+        },
+        "unjail": {
+            "description": "Unjail members from the jail channel by removing the jail role from their list of roles. Any other roles that are not the jail role will not be removed.",
+            "params": {
+                "members": "Member(s) to unjail."
+            },
+            "usage": {
+                "{prefix}unjail @Stinker": "Free Stinker from the jail (though he belongs there!)"
+            },
+            "embed": {
+                "title": "Unjailed Members",
+                "description": "Unjailed {members} by removing {jail_role} from their list of roles.",
+                "color": "success"
+            },
+            "guide": "Requires the jail system to be set up. Run `{prefix}command jail_create` for more information."
         }
     },
-    "error": {
-        "JailNotExists": "The jail module has not been properly set up. In order to several commands in the jail module, first run `{prefix}jailcreate`."
+    "errors": {
+        "JailNotExists": "The jail module has not been properly set up or created. In order to use this command in the jail module, first run `{prefix}jail_create`.",
+        "InvalidMember": "Inputted value \"{value}\" was unable to be converted into a member.",
+        "MissingMembers": "No members were inputted! Please specify who you want to jail or unjail.",
+        "JailBroken": "An error has occured. Either the jail channel or jail role have been deleted. To amend this, run `{prefix}delete_jail` and then `{prefix}create_jail`."
     }
 }

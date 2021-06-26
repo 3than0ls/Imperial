@@ -99,7 +99,7 @@
         },
         "automath": {
             "name": "AutoMath",
-            "description": "Whether or not the bot will automatically detect and answer simple math expressions (similar to `{prefix}calculate`).",
+            "description": "Whether or not the bot will automatically detect and answer simple math expressions, similar to `calculate` command from the math module.",
             "fields": [
                 {
                     "name": "Settings Type",
@@ -135,7 +135,7 @@
         },
         "jail": {
             "name": "Jail Settings",
-            "description": "Jail settings, where the jail channel and role are stored. These cannot be modified using `{prefix}settings set jail [value]`, and must be modified using commands from the jail module.",
+            "description": "Jail settings, where the jail channel and role are stored. These cannot be modified using `settings set` command, and must be modified using commands from the jail module.",
             "fields": [
                 {
                     "name": "Settings Type",
@@ -147,7 +147,7 @@
                 },
                 {
                     "name": "Update This Setting",
-                    "value": "Cannot update these values using `{prefix}settings set jail [value]`. Run `>module jail` for more info on how to set these values."
+                    "value": "Cannot update these values using `{prefix}settings set jail [value]`.\nRun `{prefix}module jail` and `{prefix}command create_jail` for more info on how to set these values."
                 }
             ]
         }

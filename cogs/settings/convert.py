@@ -125,11 +125,21 @@ class ToStore:
         else:
             raise ToStoreError("archivecategory", value)
 
-    # def jail(self, ctx: commands.Context, value: dict):
-    #     """dict of a jail_channel id and jail_role id. convert to dict of jail_channel discord Channel and jail_role Role"""
-    #     pass
-    #     else:
-    #         raise ToStoreError("archivecategory", value)
+    def jail(self, ctx: commands.Context, value: dict) -> dict:
+        """dict of a jail_channel id and jail_role id. convert to dict of jail_channel discord Channel and jail_role Role"""
+        jail_channel = value.get("jail_channel", None)
+        jail_role = value.get("jail_role", None)
+        if isinstance(jail_channel, discord.TextChannel) and isinstance(
+            jail_role, discord.Role
+        ):
+            return {
+                "jail": {
+                    "jail_channel": str(jail_channel.id),
+                    "jail_role": str(jail_role.id),
+                }
+            }
+        else:
+            raise ToStoreError("jail", value)
 
 
 class ToClient:
@@ -198,9 +208,9 @@ class ToClient:
         converted["jail_channel"] = jail_channel
         converted["jail_role"] = jail_role
         display["jail_channel"] = (
-            jail_channel if jail_channel == "N/A" else jail_channel.mention
+            "`N/A`" if jail_channel == "N/A" else jail_channel.mention
         )
-        display["jail_role"] = jail_role if jail_role == "N/A" else jail_role.mention
+        display["jail_role"] = "`N/A`" if jail_role == "N/A" else jail_role.mention
 
         # print(value, converted, display)
         return (value, converted, display)

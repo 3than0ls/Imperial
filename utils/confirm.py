@@ -1,6 +1,5 @@
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 import asyncio
-import discord.ext
 
 
 async def confirm(ctx, prompt, timeout=30, color=None):
