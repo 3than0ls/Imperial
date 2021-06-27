@@ -1,0 +1,6 @@
+{
+    "name": "Responder",
+    "description": "Detect certain messages being sent in chat and automatically respond to them.",
+    "commands": {
+    }
+}

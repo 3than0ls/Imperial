@@ -152,7 +152,7 @@ class ReactionRoles(ExtendedCog):
                 member,
                 embed=EmbedFactory(
                     {
-                        "description": f"The requested role or profile was unable to be assigned, likely because it no longer exists. Ask a server administrator for more information.",
+                        "description": f"The requested role or profile from server **{payload.guild_id}** was unable to be assigned, likely because it no longer exists. Ask a server administrator for more information.",
                     },
                     error=True,
                 ),
@@ -176,7 +176,7 @@ class ReactionRoles(ExtendedCog):
             embed=EmbedFactory(
                 {
                     "title": f"Reaction {_type.capitalize()} Assigned",
-                    "description": f"**Successfully assigned {_type} \"{_object['name'] if _type == 'profile' else _object.name}\"**\nDepending on your roles prior to this, nothing may have changed.",
+                    "description": f"**Successfully assigned {_type} \"{_object['name'] if _type == 'profile' else _object.name}\" from server {payload.guild_id}**\nDepending on your roles prior to this, nothing may have changed.",
                     "color": "success",
                 }
             ),
