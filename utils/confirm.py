@@ -7,7 +7,7 @@ async def confirm(ctx, prompt, timeout=30, color=None):
         embed=EmbedFactory(
             {
                 "title": "Confirm Decision",
-                "description": f"{prompt}.\n\nRespond with :white_check_mark: to confirm, or with :x: to deny.",
+                "description": f"{prompt}\n\nRespond with :white_check_mark: to confirm, or with :x: to deny.",
                 "color": "confirm",
             }
         ),
@@ -29,7 +29,7 @@ async def confirm(ctx, prompt, timeout=30, color=None):
             embed=EmbedFactory(
                 {
                     "title": "Confirmation Timed Out",
-                    "description": f"{prompt}.\n\nUser did not respond after {timeout} seconds, so the confirmation was timed out.",
+                    "description": f"{prompt}\n\nUser did not respond after {timeout} seconds, so the confirmation was timed out.",
                     "color": "confirm",
                 }
             ),
@@ -41,7 +41,7 @@ async def confirm(ctx, prompt, timeout=30, color=None):
             embed=EmbedFactory(
                 {
                     "title": "Confirmed Decision",
-                    "description": f"{prompt}.\n\n**✅ Decision Confirmed.**",
+                    "description": f"{prompt}\n\n**✅ Decision Confirmed.**",
                     "color": "success",
                 }
             ),
@@ -52,7 +52,7 @@ async def confirm(ctx, prompt, timeout=30, color=None):
             embed=EmbedFactory(
                 {
                     "title": "Denied Decision",
-                    "description": f"{prompt}.\n\n**❌ Decision Denied.**",
+                    "description": f"{prompt}\n\n**❌ Decision Denied.**",
                     "color": "error",
                 }
             ),

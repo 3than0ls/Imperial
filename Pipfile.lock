@@ -227,10 +227,10 @@
         },
         "google-api-python-client": {
             "hashes": [
-                "sha256:2b5274f06799d80222fd3f20fd4ebcd19f57c009703bd4cf7b00492e7e05e15a",
-                "sha256:fb5c28b61327392891bf79ccd0a4edc54c76f6d1f3c10e3821dbdf8a7287f691"
+                "sha256:58424d263344625dcf4dc08e7639a6714737102ab4ae83e5f043e3db08d9965f",
+                "sha256:6da20ca5f56be8c104c31de49153c5c97af57470a4ab19322534d7483dcfa727"
             ],
-            "version": "==2.9.0"
+            "version": "==2.10.0"
         },
         "google-auth": {
             "hashes": [
@@ -248,10 +248,10 @@
         },
         "google-cloud-core": {
             "hashes": [
-                "sha256:2ab0cf260c11d0cc334573301970419abb6a1f3909c6cd136e4be996616372fe",
-                "sha256:9bd528810423aeaa428a9a178e7320883bbb690a8b0bb38297b794dc319c415a"
+                "sha256:31e8c8596d3fbe2ecbe8708572b48741f8b247a78740aebfaf4da445487a1af5",
+                "sha256:3bd1e679a3d38b9da93c5919ae56239dda91fb32a2d954b2cd830392337c1cc9"
             ],
-            "version": "==1.7.0"
+            "version": "==1.7.1"
         },
         "google-cloud-firestore": {
             "hashes": [
@@ -263,10 +263,10 @@
         },
         "google-cloud-storage": {
             "hashes": [
-                "sha256:162011d66f64b8dc5d7936609a5daf0066cc521231546aea02c126a5559446c4",
-                "sha256:69499560ec8234339ce831704419a2288c409a422f6e9ed1facc9345412ee637"
+                "sha256:89a5f5290e61990a5ae138d8ba8895bc3fe1e00fbc2e3b6beb7fb8378ca7a2f1",
+                "sha256:e9ba9e0486b385fa0b9f16a0c3bfa4cbb7001a2285adb65374de4415588cdb2d"
             ],
-            "version": "==1.38.0"
+            "version": "==1.39.0"
         },
         "google-crc32c": {
             "hashes": [
@@ -618,10 +618,10 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:753a0374df26658f99d826cfe40394a686d05985786d946fbe4165b5148f5a7c",
-                "sha256:a7acd0977125325f516bda9735fa7142b909a8d01e8b2e4c8108d0984e6e0098"
+                "sha256:39fb8672126159acb139a7718dd10806104dec1e2f0f6c88aab05d17df10c8d4",
+                "sha256:f57b4c16c62fa2760b7e3d97c35b255512fb6b59a259730f36ba32ce9f8e342f"
             ],
-            "version": "==1.26.5"
+            "version": "==1.26.6"
         },
         "yarl": {
             "hashes": [
@@ -676,10 +676,10 @@
         },
         "astroid": {
             "hashes": [
-                "sha256:971124ffdc4362162a1e0256d0657cd55f7206f7ec110f3fbce0459a88ced93c",
-                "sha256:ea23f18572a108cc8da649236b1c4a67fb2685b984e189e3459be6c0fe1c2d05"
+                "sha256:09bdb456e02564731f8b5957cdd0c98a7f01d2db5e90eb1d794c353c28bfd705",
+                "sha256:6a8a51f64dae307f6e0c9db752b66a7951e282389d8362cc1d39a56f3feeb31d"
             ],
-            "version": "==2.6.0.dev0"
+            "version": "==2.6.0"
         },
         "black": {
             "hashes": [

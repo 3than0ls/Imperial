@@ -1,6 +1,60 @@
 {
     "name": "Responder",
-    "description": "Detect certain messages being sent in chat and automatically respond to them.",
+    "description": "Detect certain messages being sent in chat and automatically respond to them",
     "commands": {
+        "responder": {
+            "description": "Create, delete, and get info about responders. Responders detect certain trigger phrases or keywords and send a set response. Run `{prefix}command responder` for more information on how to run these subcommands.",
+            "usage": {
+                "{prefix}responder create \"hello sir!\" \"hello there\"": "Detect when the phrase \"hello sir!\" has been sent in chat, and respond with \"hello there\"."
+            },
+            "guide": "Important things to note:\n1) Triggers can only have one responder attached to it, not multiple.\n2) Triggers and responders with multiple words need to be wrapped in quotation marks when creating.\n3) Triggers are case sensitive.\n4) Wildcard means to respond if the trigger phrase/keyword is found anywhere inside of a user's message. 5) Responders should not be named after any commands of this bot or aliases of those commands, as the bot will prioritize the command invoke and ignore the trigger word.\n\nTo create a responder, run `{prefix}responder create [trigger] [responder] *[wildcard]`.\nTo delete a responder, run `{prefix}responder delete [trigger], where `trigger` is the trigger word to the responder you want to delete.\nTo get information about a responder, run `{prefix}responder info [trigger]`, where `trigger` is the trigger of the responder you want information about.",
+            "subcommands": {
+                "create": {
+                    "embed": {
+                        "title": "Responder Created",
+                        "description": "A responder with the trigger phrase/keyword \"{trigger}\" was created.\n\nTo get more information about this responder, run `{prefix}responder info {trigger}`."
+                    },
+                    "errors": {
+                        "InvalidTrigger": "The given trigger word is {length} characters. Trigger words must be below 50 characters.",
+                        "InvalidResponder": "The given responder is {length} characters. Responder text must be below 1800 characters."
+                    }
+                },
+                "delete": {
+                    "embed": {
+                        "title": "Responder Deleted",
+                        "description": "Deleted responder with the trigger \"{trigger}\""
+                    },
+                    "errors": {
+                        "ResponderNotExist": "There is no responder with the trigger phrase/keyword \"{trigger}\". To view all responders and their associated trigger phrases, run `{prefix}responders`."
+                    }
+                },
+                "info": {
+                    "embed": {
+                        "title": "Responder Information",
+                        "fields": [
+                            {
+                                "name": "Trigger",
+                                "value": "{trigger}"
+                            },
+                            {
+                                "name": "Responder",
+                                "value": "{responder}"
+                            },
+                            {
+                                "name": "Creator",
+                                "value": "{creator}"
+                            },
+                            {
+                                "name": "Creation Date",
+                                "value": "{created}"
+                            }
+                        ]
+                    },
+                    "errors": {
+                        "ResponderNotExist": "There is no responder with the trigger phrase/keyword \"{trigger}\". To view all responders and their associated trigger phrases, run `{prefix}responders`."
+                    }
+                }
+            }
+        }
     }
 }

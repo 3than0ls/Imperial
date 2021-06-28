@@ -26,6 +26,10 @@ from cogs.reaction_roles.helper import (  # pylint: disable=import-error
 import asyncio
 
 
+class ReactionRoleNotExist(Exception):
+    pass
+
+
 class ReactionRoles(ExtendedCog):
     def __init__(self, bot):
         super().__init__(bot)
@@ -113,6 +117,10 @@ class ReactionRoles(ExtendedCog):
 
     async def get_live_listener(self, ctx, message, emoji):
         live_listener = in_live_listeners(message, self.live_listeners)
+
+        if live_listener is None:
+            raise ReactionRoleNotExist(message.id)
+
         if live_listener is not None and (
             rr_info := live_listener.get(
                 str(emoji)
@@ -131,6 +139,7 @@ class ReactionRoles(ExtendedCog):
                     if assigned_profile is None:
                         # profile doesnt exist, just raise keyerror to be handled later
                         raise KeyError()
+
                     return rr_info["type"], assigned_profile.to_dict()
 
             except (RoleNotFound, KeyError):
@@ -145,7 +154,10 @@ class ReactionRoles(ExtendedCog):
             return
         ctx = await self.bot.get_context(message)
 
-        _type, _object = await self.get_live_listener(ctx, message, emoji)
+        try:
+            _type, _object = await self.get_live_listener(ctx, message, emoji)
+        except ReactionRoleNotExist:
+            return
 
         if _type == None:
             return dm(
@@ -190,7 +202,10 @@ class ReactionRoles(ExtendedCog):
         except (NoPrivateMessage, BadArgument):
             return
 
-        _type, _object = await self.get_live_listener(ctx, message, emoji)
+        try:
+            _type, _object = await self.get_live_listener(ctx, message, emoji)
+        except ReactionRoleNotExist:
+            return
 
         if _type == None:
             return dm(

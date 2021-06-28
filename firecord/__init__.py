@@ -1,6 +1,5 @@
 import json
 import os
-
 import firebase_admin
 from firebase_admin import credentials, firestore
 
@@ -19,6 +18,7 @@ class Firecord:
         self.firestore = firestore.client(app=self.app)
         self.prefix_map = {}
         self.rr_map = {}
+        self.responder_map = {}
 
     def initialize_bot(self, bot):
         """add discord bot client to firecord to be used. must be called for prefix map to work, and may be used in other methods"""
@@ -26,6 +26,7 @@ class Firecord:
         guilds_collection = self.firestore.collection("guilds")
         self.init_prefix_map(guilds_collection)
         self.init_rr(guilds_collection)
+        self.init_responder(guilds_collection)
 
     # --------- DISCORD BOT PREFIX METHODS ---------
     def init_prefix_map(self, guilds):
@@ -209,6 +210,46 @@ class Firecord:
             f"{channel_id}-{message_id}"
         )
         return rr_info.delete()
+
+    # --------- RESPONDER METHODS -------------
+    def init_responder(self, guilds):
+        guild_snapshots = [ref.get() for ref in guilds.list_documents()]
+        self.responder_map = {
+            str(snapshot.id): {
+                str(
+                    responder.id
+                ): responder.get().to_dict()  # will have some unnecesary unused values such as timestamp that won't be used alongside responder_map
+                for responder in list(
+                    snapshot.reference.collection("responders").list_documents()
+                )
+            }
+            for snapshot in guild_snapshots
+        }
+        return self.responder_map
+
+    def responder_create(self, guild_id: str, author_id: str, responder_info):
+        guild_id = str(guild_id)
+        ref, *_ = self.use_guild(guild_id)
+        obj = {
+            **responder_info,
+            "creator": author_id,
+            "created": firestore.SERVER_TIMESTAMP,  # pylint: disable=no-member
+        }
+        ref.collection("responders").document(responder_info["trigger"]).set(obj)
+
+        return obj
+
+    def responder_get(self, guild_id: str, trigger: str):
+        guild_id = str(guild_id)
+        ref, *_ = self.use_guild(guild_id=guild_id)
+        responder = ref.collection("responders").document(trigger).get()
+
+        return responder if responder.exists else None
+
+    def responder_delete(self, guild_id: str, trigger):
+        guild_id = str(guild_id)
+        ref, *_ = self.use_guild(guild_id=guild_id)
+        return ref.collection("responders").document(trigger).delete()
 
 
 firecord = Firecord()

@@ -124,7 +124,7 @@ class Jail(ExtendedCog):
 
         proceed = await confirm(
             ctx,
-            "Are you sure you want to delete the jail system? This will delete the jail channel and the jail role from the server",
+            "Are you sure you want to delete the jail system? This will delete the jail channel and the jail role from the server?",
         )
         if proceed:
             await asyncio.sleep(1)
