@@ -87,7 +87,7 @@ class Math(ExtendedCog):
 
                 await ctx.send(
                     embed=EmbedFactory(
-                        self.module_info["commands"]["calculate"]["embed"],
+                        self.commands_info["calculate"]["embed"],
                         formatting_data={
                             "raw": message.content,
                             "author": message.author.mention,

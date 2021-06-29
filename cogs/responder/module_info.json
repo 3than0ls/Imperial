@@ -55,6 +55,14 @@
                     }
                 }
             }
+        },
+        "responders": {
+            "description": "List all trigger words and the command to get more information about their associated responder. Can also be run using `{prefix}responder list`.",
+            "embed": {
+                "title": "List of responders for {server_name}",
+                "description": "{server_name} has **{responder_num}** responders.\nTo change the sort order you view profiles at, run `{prefix}responders [created/creator/alphabetical]`.",
+                "fields": []
+            }
         }
     }
 }

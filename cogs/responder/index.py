@@ -5,6 +5,8 @@ from discord.ext import commands
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.confirm import confirm  # pylint: disable=import-error
+from utils.pagination import pagination  # pylint: disable=import-error
+from datetime import datetime
 
 
 class Responder(ExtendedCog):
@@ -12,6 +14,7 @@ class Responder(ExtendedCog):
         super().__init__(bot)
         self.responder_map = firecord.responder_map
         self.cache = self.bot.cache["responder"]
+        self.cd_cache = self.bot.cache["responder_cd"]
 
     def _create_responder(self, ctx, responder_info):
         self.cache[str(ctx.guild.id)][responder_info["trigger"]] = responder_info
@@ -25,6 +28,17 @@ class Responder(ExtendedCog):
     async def on_message(self, message):
         if message.author.id == self.bot.user.id and not message.author.bot:
             return
+
+        # apply a cooldown check
+        now_time = datetime.now()
+        guild_id = str(message.guild.id)
+        if (
+            self.cd_cache[guild_id]
+            and (now_time - self.cd_cache[guild_id]).total_seconds() < 2
+        ):
+            return
+        else:
+            self.cd_cache[guild_id] = now_time
 
         # check if the message isn't a bot command, if it is, just return and dont do anything
         msg = message.content
@@ -48,7 +62,7 @@ class Responder(ExtendedCog):
                 return await message.channel.send(responder["responder"])
 
     @commands.group(
-        aliases=["responders", "autoresponder", "autoresponders"],
+        aliases=["autoresponder"],
         case_insensitive=True,
     )
     async def responder(self, ctx):
@@ -84,7 +98,7 @@ class Responder(ExtendedCog):
 
         if await confirm(
             ctx,
-            f"Creating a responder. Please verify that these are the correct values.\n\n**Trigger Phrase: **{len(trigger)} character(s), {len(trigger.split())} character(s).\n{trigger}\n\n**Response:** {len(responder)} characters(s) {len(responder.split())} word(s)\n{responder}\n\n**Wildcard:** {wildcard}",
+            f"Creating a responder. Please verify that these are the correct values.\n\n**Trigger Phrase: **{len(trigger)} character(s), {len(trigger.split())} character(s).\n{trigger}\n\n**Response:** {len(responder)} characters(s), {len(responder.split())} word(s)\n{responder}\n\n**Wildcard:** {wildcard}",
         ):
             self._create_responder(
                 ctx, {"trigger": trigger, "responder": responder, "wildcard": wildcard}
@@ -92,9 +106,7 @@ class Responder(ExtendedCog):
 
             await ctx.send(
                 embed=EmbedFactory(
-                    self.module_info["commands"]["responder"]["subcommands"]["create"][
-                        "embed"
-                    ],
+                    self.commands_info["responder"]["subcommands"]["create"]["embed"],
                     formatting_data={
                         "prefix": ctx.prefix,
                         "trigger": trigger,
@@ -105,9 +117,7 @@ class Responder(ExtendedCog):
     @responder.command(aliases=["remove"])
     async def delete(self, ctx, *trigger):
         trigger = " ".join(trigger)
-        command_info = self.module_info["commands"]["responder"]["subcommands"][
-            "delete"
-        ]
+        command_info = self.commands_info["responder"]["subcommands"]["delete"]
         guild_id = str(ctx.guild.id)
         if firecord.responder_get(guild_id, trigger) is None:
             raise BadArgument(
@@ -129,7 +139,7 @@ class Responder(ExtendedCog):
     @responder.command(aliases=["information"])
     async def info(self, ctx, *trigger):
         trigger = " ".join(trigger)
-        command_info = self.module_info["commands"]["responder"]["subcommands"]["info"]
+        command_info = self.commands_info["responder"]["subcommands"]["info"]
         guild_id = str(ctx.guild.id)
 
         responder = firecord.responder_get(guild_id, trigger)
@@ -152,6 +162,49 @@ class Responder(ExtendedCog):
                     ).mention,
                 },
             )
+        )
+
+    @responder.command(aliases=["list"])
+    async def _list(self, ctx, order="alphabetical"):
+        await ctx.invoke(self.bot.get_command("responders"), order=order)
+
+    @commands.command(aliases=["autoresponders"])
+    async def responders(self, ctx, order="alphabetical"):
+        responders = firecord.responder_list(str(ctx.guild.id))
+
+        if order == "created" or order == "date":
+            responder_list = sorted(
+                responders, key=lambda responder: responder["created"]
+            )
+        elif order == "creator":
+            responder_list = sorted(
+                responders, key=lambda responder: responder["creator"]
+            )
+        else:  # default to alphabetical
+            responder_list = sorted(
+                responders, key=lambda responder: responder["trigger"]
+            )
+
+        await pagination(
+            ctx,
+            EmbedFactory(
+                {
+                    **self.command_info["embed"],
+                    "fields": [
+                        {
+                            "name": responder["trigger"],
+                            "value": f'`>responder info {responder["trigger"]}`',
+                            "inline": True,
+                        }
+                        for responder in responder_list
+                    ],
+                },
+                {
+                    "server_name": ctx.guild.name,
+                    "responder_num": str(len(responder_list)),
+                    "prefix": ctx.prefix,
+                },
+            ),
         )
 
 

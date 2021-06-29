@@ -26,7 +26,7 @@ class ExtendedCog(commands.Cog):
     async def set_cooldowns(self):
         for _command in self.get_commands():
             command = self.bot.remove_command(_command.name)
-            cooldown_info = self.module_info["commands"][command.name].get(
+            cooldown_info = self.commands_info[command.name].get(
                 "cooldown",
                 {
                     "seconds": ExtendedCog.DEFAULT_CMD_CD_SECONDS,
@@ -66,6 +66,6 @@ class ExtendedCog(commands.Cog):
         command = calframe[1][3]
 
         try:
-            return self.module_info["commands"][command]
+            return self.commands_info[command]
         except KeyError:
             return None

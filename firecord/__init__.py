@@ -246,6 +246,13 @@ class Firecord:
 
         return responder if responder.exists else None
 
+    def responder_list(self, guild_id: str):
+        guild_id = str(guild_id)
+        ref, *_ = self.use_guild(guild_id=guild_id)
+        responders = ref.collection("responders").stream()
+
+        return [responder.to_dict() for responder in responders]
+
     def responder_delete(self, guild_id: str, trigger):
         guild_id = str(guild_id)
         ref, *_ = self.use_guild(guild_id=guild_id)
