@@ -24,6 +24,6 @@ def has_access():
         elif security == "admin":
             return ctx.author.guild_permissions.administrator
         elif security == "owner":
-            return ctx.guild.owner.id == ctx.guild.author.id
+            return ctx.guild.owner_id == ctx.author.id
 
     return commands.check(predicate)

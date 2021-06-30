@@ -1,7 +1,7 @@
 import asyncio
 
 import discord
-from discord.ext.commands.converter import MemberConverter
+from discord.ext.commands.converter import MemberConverter, RoleConverter
 from discord.ext.commands.errors import MemberNotFound
 from checks.has_access import has_access  # pylint: disable=import-error
 from cogs.settings.convert import to_client, to_store  # pylint: disable=import-error
@@ -15,6 +15,15 @@ from utils.confirm import confirm  # pylint: disable=import-error
 class Jail(ExtendedCog):
     def __init__(self, bot):
         super().__init__(bot)
+
+    @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel):
+        jail_role = to_client.jail(
+            channel, firecord.get_guild_data(str(channel.guild.id))["jail"]
+        )[1]["jail_role"]
+
+        if isinstance(jail_role, discord.Role):
+            await channel.set_permissions(jail_role, read_messages=False)
 
     async def jail_exists(self, ctx):
         jail_value_ids = to_client.jail(

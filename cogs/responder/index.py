@@ -1,18 +1,20 @@
+from datetime import datetime
+
+from checks.has_access import has_access  # pylint: disable=import-error
+from discord.ext import commands
 from discord.ext.commands.converter import UserConverter
 from discord.ext.commands.errors import BadArgument
 from firecord import firecord  # pylint: disable=import-error
-from discord.ext import commands
 from utils.cog import ExtendedCog  # pylint: disable=import-error
-from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.confirm import confirm  # pylint: disable=import-error
+from utils.embed import EmbedFactory  # pylint: disable=import-error
 from utils.pagination import pagination  # pylint: disable=import-error
-from datetime import datetime
 
 
 class Responder(ExtendedCog):
     def __init__(self, bot):
         super().__init__(bot)
-        self.responder_map = firecord.responder_map
+        self.bot.cache["responder"] = firecord.responder_map
         self.cache = self.bot.cache["responder"]
         self.cd_cache = self.bot.cache["responder_cd"]
 
@@ -26,7 +28,11 @@ class Responder(ExtendedCog):
 
     @ExtendedCog.listener(name="on_message")
     async def on_message(self, message):
-        if message.author.id == self.bot.user.id and not message.author.bot:
+        if (
+            message.author.id == self.bot.user.id
+            or message.author.bot
+            or message.guild is None
+        ):
             return
 
         # apply a cooldown check
@@ -47,14 +53,12 @@ class Responder(ExtendedCog):
             return
 
         guild_id = str(message.guild.id)
-        if msg in self.responder_map[guild_id]:
-            return await message.channel.send(
-                self.responder_map[guild_id][msg]["responder"]
-            )
+        if msg in self.cache[guild_id]:
+            return await message.channel.send(self.cache[guild_id][msg]["responder"])
 
         wildcards = [
             responder
-            for responder in self.responder_map[guild_id].values()
+            for responder in self.cache[guild_id].values()
             if responder.get("wildcard", False) == True
         ]
         for responder in wildcards:
@@ -76,6 +80,7 @@ class Responder(ExtendedCog):
                 )
             )
 
+    @has_access()
     @responder.command(aliases=["add", "new"])
     async def create(self, ctx, trigger, responder, *, wildcard="No"):
         """restrict trigger to be less than 50 characters, and response to less than 1800 characters."""
@@ -114,6 +119,7 @@ class Responder(ExtendedCog):
                 )
             )
 
+    @has_access()
     @responder.command(aliases=["remove"])
     async def delete(self, ctx, *trigger):
         trigger = " ".join(trigger)
@@ -124,12 +130,12 @@ class Responder(ExtendedCog):
                 command_info["errors"]["ResponderNotExist"].format(trigger=trigger)
             )
 
-        del self.responder_map[guild_id][trigger]
+        del self.cache[guild_id][trigger]
         firecord.responder_delete(guild_id, trigger)
 
         await ctx.send(
             embed=EmbedFactory(
-                command_info["trigger"],
+                command_info["embed"],
                 formatting_data={
                     "trigger": trigger,
                 },

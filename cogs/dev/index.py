@@ -40,5 +40,5 @@ class Dev(ExtendedCog):
 
 
 def setup(bot):
-    if os.environ["DEV"]:
+    if os.environ["DEV"] == "1" or os.environ["DEV"].lower() == "true":
         bot.add_cog(Dev(bot))

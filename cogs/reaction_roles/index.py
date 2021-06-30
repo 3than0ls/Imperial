@@ -5,6 +5,7 @@ import discord
 from discord.errors import Forbidden
 from discord.ext import commands
 from discord.ext.commands.converter import (
+    GuildConverter,
     MemberConverter,
     RoleConverter,
 )
@@ -183,12 +184,14 @@ class ReactionRoles(ExtendedCog):
 
             await member.edit(roles=roles)
 
+        guild = await GuildConverter().convert(ctx, str(payload.guild_id))
+
         await dm(
             member,
             embed=EmbedFactory(
                 {
                     "title": f"Reaction {_type.capitalize()} Assigned",
-                    "description": f"**Successfully assigned {_type} \"{_object['name'] if _type == 'profile' else _object.name}\" from server {payload.guild_id}**\nDepending on your roles prior to this, nothing may have changed.",
+                    "description": f"**Successfully assigned {_type} \"{_object['name'] if _type == 'profile' else _object.name}\" from server {guild.name}**\nDepending on your roles prior to this, nothing may have changed.",
                     "color": "success",
                 }
             ),
@@ -322,8 +325,7 @@ class ReactionRoles(ExtendedCog):
         *args,
         channel: discord.TextChannel = None,
     ):
-        inputs = [input for input in args if input]
-        individual_args = "".join(inputs).split(",")
+        individual_args = " ".join(args).split(",")
 
         rconvert = RoleConverter().convert
 
@@ -335,10 +337,11 @@ class ReactionRoles(ExtendedCog):
         for arg in individual_args:
             try:
                 rr_info_assigned, *arg_args = arg.split("/")
+                rr_info_assigned = rr_info_assigned.strip()
                 description = ""
                 if len(arg_args) > 1:
                     description = arg_args[1]
-                emoji = arg_args[0]
+                emoji = arg_args[0].strip()
             except:
                 raise BadArgument(self.command_info["errors"]["InvalidArgs"].format())
 
