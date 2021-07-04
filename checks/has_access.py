@@ -19,7 +19,7 @@ def has_access():
 
         if security == "none":
             return True
-        elif security == "manage_server":
+        elif security == "server_manager":
             return ctx.author.guild_permissions.manage_guild
         elif security == "admin":
             return ctx.author.guild_permissions.administrator
