@@ -81,9 +81,22 @@ class Math(ExtendedCog):
                 ctx = await self.bot.get_context(message)
                 expression, output = self.eval(message.content)
 
-                # a silly emoticon-ish thing that needs to be an exception
-                if expression == "0-0":
+                # a silly emoticon-ish thing that needs to be an exception, and some other udmb stuff
+                if (
+                    expression == "0-0"
+                    or expression.startswith("'")
+                    or expression.startswith('"')
+                ):
                     return
+
+                if expression in funcs.keys() or expression in symbols.keys():
+                    return
+
+                try:
+                    int(expression)
+                    return
+                except:
+                    pass
 
                 await ctx.send(
                     embed=EmbedFactory(
