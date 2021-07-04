@@ -3,6 +3,7 @@ import datetime
 from utils.logger import log
 import os
 
+import discord
 from discord.ext import commands
 
 from cogs import cogs_list
