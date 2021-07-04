@@ -120,7 +120,7 @@ class ToStore:
         elif isinstance(value, discord.CategoryChannel):
             converted = value
 
-        if converted is not None:
+        if converted[0] is not None:
             return str(converted.id)
         else:
             raise ToStoreError("archivecategory", value)
@@ -177,7 +177,7 @@ class ToClient:
     ) -> typing.Union[None, typing.Tuple[int, str, discord.CategoryChannel]]:
         """convert ID to a discord Category. if value is N/A (not set), return None. otherwise, returns a tuple, first being raw int ID from firestore, second being the name of the category, and third being the discord Category object"""
         category = discord.utils.find(
-            lambda cat: str(cat.id) == value, ctx.guild.categories
+            lambda cat: str(cat.id) == str(value), ctx.guild.categories
         )
 
         if value == "N/A" or category is None:

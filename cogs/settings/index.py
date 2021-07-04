@@ -103,7 +103,7 @@ class Settings(ExtendedCog):
                 self.commands_info["settings"]["subcommands"]["set"]["errors"][
                     "InvalidArgument"
                 ].format(
-                    value=to_client.convert(setting_name, value),
+                    value=to_client.convert(ctx, setting_name, value),
                     setting_name=setting_name,
                     prefix=ctx.prefix,
                 )

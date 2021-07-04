@@ -1,4 +1,5 @@
 import datetime
+
 from utils.logger import log
 import os
 
@@ -11,7 +12,7 @@ from utils.cache import cache
 
 class Client(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=self.__prefix)
+        super().__init__(command_prefix=self.__prefix, intents=discord.Intents.all())
         self.cache = cache
         # disable help command
         self.help_command = None

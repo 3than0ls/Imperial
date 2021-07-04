@@ -3,7 +3,7 @@
     "description": "Restrict members to only be able to see and type in one channel (nicknamed \"jailing\").",
     "commands": {
         "create_jail": {
-            "description": "Create a jail channel and jail role. Run `{prefix}help create_jail` for more information about jails.",
+            "description": "Create a jail channel and jail role. Run help for this command for more information about jails.",
             "params": {
                 "channel": "The text channel to turn into a jail. If left empty, it will create a new text channel called \"jail\"."
             },

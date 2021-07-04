@@ -28,7 +28,7 @@
                     },
                     {
                         "name": "Invite",
-                        "value": "[Invite {me.name} to a server.]({invite_url})"
+                        "value": "[Invite {me.name} to a server.](https://discord.com/api/oauth2/authorize?client_id=823791910597689385&permissions=8&scope=bot)"
                     }
                 ]
             },

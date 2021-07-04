@@ -1,5 +1,5 @@
 {
-    "name": "Reaction Roles",
+    "name": "ReactionRoles",
     "description": "Allow server members to react to messages to receive roles or profiles. ",
     "commands": {
         "reaction_role": {

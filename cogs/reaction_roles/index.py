@@ -161,15 +161,16 @@ class ReactionRoles(ExtendedCog):
             return
 
         if _type == None:
-            return dm(
-                member,
-                embed=EmbedFactory(
-                    {
-                        "description": f"The requested role or profile from server **{payload.guild_id}** was unable to be assigned, likely because it no longer exists. Ask a server administrator for more information.",
-                    },
-                    error=True,
-                ),
-            )
+            pass
+            # return dm(
+            #     member,
+            #     embed=EmbedFactory(
+            #         {
+            #             "description": f"The requested role or profile from server **{payload.guild_id}** was unable to be assigned, likely because it no longer exists. Ask a server administrator for more information.",
+            #         },
+            #         error=True,
+            #     ),
+            # )
         elif _type == "role":
             await member.add_roles(_object)
         elif _type == "profile":
@@ -186,16 +187,16 @@ class ReactionRoles(ExtendedCog):
 
         guild = await GuildConverter().convert(ctx, str(payload.guild_id))
 
-        await dm(
-            member,
-            embed=EmbedFactory(
-                {
-                    "title": f"Reaction {_type.capitalize()} Assigned",
-                    "description": f"**Successfully assigned {_type} \"{_object['name'] if _type == 'profile' else _object.name}\" from server {guild.name}**\nDepending on your roles prior to this, nothing may have changed.",
-                    "color": "success",
-                }
-            ),
-        )
+        # await dm(
+        #     member,
+        #     embed=EmbedFactory(
+        #         {
+        #             "title": f"Reaction {_type.capitalize()} Assigned",
+        #             "description": f"**Successfully assigned {_type} \"{_object['name'] if _type == 'profile' else _object.name}\" from server {guild.name}**\nDepending on your roles prior to this, nothing may have changed.",
+        #             "color": "success",
+        #         }
+        #     ),
+        # )
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -211,15 +212,16 @@ class ReactionRoles(ExtendedCog):
             return
 
         if _type == None:
-            return dm(
-                member,
-                embed=EmbedFactory(
-                    {
-                        "description": f"The requested role or profile was unable to be removed, likely because it no longer exists. Ask a server administrator for more information.",
-                    },
-                    error=True,
-                ),
-            )
+            pass
+            # return dm(
+            #     member,
+            #     embed=EmbedFactory(
+            #         {
+            #             "description": f"The requested role or profile was unable to be removed, likely because it no longer exists. Ask a server administrator for more information.",
+            #         },
+            #         error=True,
+            #     ),
+            # )
         elif _type == "role":
             await member.remove_roles(_object)
         elif _type == "profile":
@@ -230,16 +232,16 @@ class ReactionRoles(ExtendedCog):
             ]
             await member.edit(roles=roles)
 
-        await dm(
-            member,
-            embed=EmbedFactory(
-                {
-                    "title": f"Reaction {_type.capitalize()} Removed",
-                    "description": f"**Successfully removed {_type} \"{_object['name'] if _type == 'profile' else _object.name}\".**\nDepending on your roles prior to this, nothing may have changed.",
-                    "color": "success",
-                }
-            ),
-        )
+        # await dm(
+        #     member,
+        #     embed=EmbedFactory(
+        #         {
+        #             "title": f"Reaction {_type.capitalize()} Removed",
+        #             "description": f"**Successfully removed {_type} \"{_object['name'] if _type == 'profile' else _object.name}\".**\nDepending on your roles prior to this, nothing may have changed.",
+        #             "color": "success",
+        #         }
+        #     ),
+        # )
 
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):

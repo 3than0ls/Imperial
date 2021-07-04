@@ -53,6 +53,9 @@ class Responder(ExtendedCog):
             return
 
         guild_id = str(message.guild.id)
+        if guild_id not in self.cache:
+            self.cache[guild_id] = {}
+
         if msg in self.cache[guild_id]:
             return await message.channel.send(self.cache[guild_id][msg]["responder"])
 

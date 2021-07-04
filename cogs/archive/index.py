@@ -97,7 +97,7 @@ class Archive(ExtendedCog):
         if channel.topic.startswith("Archived: "):
             topic = channel.topic[9:]
         elif channel.topic.startswith("Archived"):
-            topic = channel.topic[7:]
+            topic = ""
 
         if category is None:
             await channel.edit(

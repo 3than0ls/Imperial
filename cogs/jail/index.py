@@ -73,9 +73,8 @@ class Jail(ExtendedCog):
             )
 
         if channel is not None:
-            jail_channel = await channel.set_permissions(
-                ctx.guild.default_role, read_messages=False
-            )
+            await channel.set_permissions(ctx.guild.default_role, read_messages=False)
+            jail_channel = channel
         else:
             if jail_channel is None:
                 jail_channel = await ctx.guild.create_text_channel(
