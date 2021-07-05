@@ -1,7 +1,7 @@
 import numbers
 import re
 from decimal import MAX_EMAX, MIN_EMIN, Decimal, DivisionByZero
-
+from datetime import datetime
 from cogs.math.helper import funcs, simple_eval, symbols  # pylint: disable=import-error
 from cogs.settings.convert import to_client  # pylint: disable=import-error
 from discord.ext import commands
@@ -18,6 +18,7 @@ class Math(ExtendedCog):
         self._seval = self._seval_obj.eval
 
         self.cache = self.bot.cache
+        self.cd_cache = self.bot.cache["math_cd"]
 
     def eval(self, raw):
         expression = re.sub(
@@ -78,12 +79,26 @@ class Math(ExtendedCog):
 
         if self.cache[str(message.guild.id)]["automath"]:
             try:
+
+                # apply a cooldown check
+                now_time = datetime.now()
+                guild_id = str(message.guild.id)
+                if (
+                    self.cd_cache[guild_id]
+                    and (now_time - self.cd_cache[guild_id]).total_seconds() < 2
+                ):
+                    return
+                else:
+                    self.cd_cache[guild_id] = now_time
+
                 ctx = await self.bot.get_context(message)
                 expression, output = self.eval(message.content)
 
-                # a silly emoticon-ish thing that needs to be an exception, and some other udmb stuff
+                # get rid of common exceptions
                 if (
                     expression == "0-0"
+                    or expression == "24/7"
+                    or expression == "24/7/365"
                     or expression.startswith("'")
                     or expression.startswith('"')
                 ):
