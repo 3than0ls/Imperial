@@ -2,7 +2,11 @@ import numbers
 import re
 from decimal import MAX_EMAX, MIN_EMIN, Decimal, DivisionByZero
 from datetime import datetime
-from cogs.math.helper import funcs, simple_eval, symbols  # pylint: disable=import-error
+from cogs.math.helper import (  # pylint: disable=import-error
+    funcs,
+    simple_eval,
+    symbols,
+)
 from cogs.settings.convert import to_client  # pylint: disable=import-error
 from discord.ext import commands
 from firecord import firecord  # pylint: disable=import-error
@@ -79,7 +83,6 @@ class Math(ExtendedCog):
 
         if self.cache[str(message.guild.id)]["automath"]:
             try:
-
                 # apply a cooldown check
                 now_time = datetime.now()
                 guild_id = str(message.guild.id)
@@ -91,7 +94,6 @@ class Math(ExtendedCog):
                 else:
                     self.cd_cache[guild_id] = now_time
 
-                ctx = await self.bot.get_context(message)
                 expression, output = self.eval(message.content)
 
                 # get rid of common exceptions
@@ -104,6 +106,9 @@ class Math(ExtendedCog):
                 ):
                     return
 
+                if str(output) == "True" or str(output) == "False":
+                    return
+
                 if expression in funcs.keys() or expression in symbols.keys():
                     return
 
@@ -113,7 +118,7 @@ class Math(ExtendedCog):
                 except:
                     pass
 
-                await ctx.send(
+                await message.channel.send(
                     embed=EmbedFactory(
                         self.commands_info["calculate"]["embed"],
                         formatting_data={

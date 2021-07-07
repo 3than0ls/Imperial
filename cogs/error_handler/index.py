@@ -85,6 +85,16 @@ class ErrorHandler(ExtendedCog):
                         error_command_string=error_command_string,
                     )
                 )
+            elif isinstance(error, commands.ExpectedClosingQuoteError):
+                return await ctx.send(
+                    embed=EmbedFactory(
+                        {
+                            "description": f"You are missing a quotation mark in one of your parameters."
+                        },
+                        error=True,
+                        error_command_string=error_command_string,
+                    )
+                )
             else:
                 # All other Errors not returned come here. And we can just print the default TraceBack.
                 log.error(log)

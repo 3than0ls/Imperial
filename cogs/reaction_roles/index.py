@@ -124,7 +124,7 @@ class ReactionRoles(ExtendedCog):
 
         if live_listener is not None and (
             rr_info := live_listener.get(
-                str(emoji)
+                str(emoji), None
             )  # value is string, either specifying an emoji or a profile name
         ):
             try:
@@ -145,6 +145,8 @@ class ReactionRoles(ExtendedCog):
 
             except (RoleNotFound, KeyError):
                 return None, None
+
+        return None, None
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
