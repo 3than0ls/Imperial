@@ -73,7 +73,11 @@ class Math(ExtendedCog):
 
     @ExtendedCog.listener(name="on_message")
     async def on_message(self, message):
-        if message.author.id == self.bot.user.id or message.author.bot:
+        if (
+            message.author.id == self.bot.user.id
+            or message.author.bot
+            or message.guild is None
+        ):
             return
 
         if "automath" not in self.cache[str(message.guild.id)]:
