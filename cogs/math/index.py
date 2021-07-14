@@ -76,9 +76,52 @@ class Math(ExtendedCog):
         if (
             message.author.id == self.bot.user.id
             or message.author.bot
-            or message.guild is None
+            # or message.guild is None
         ):
             return
+
+        # handle DMs. jsut avoid all cooldowns
+        if message.guild is None:
+            try:
+                expression, output = self.eval(message.content)
+                # get rid of common exceptions
+                if (
+                    expression == "0-0"
+                    or expression == "24/7"
+                    or expression == "24/7/365"
+                    or expression.startswith("'")
+                    or expression.startswith('"')
+                    or expression.startswith(
+                        "..."
+                    )  # this needs an actual good fix - it outputs "Ellipses" for gods sake
+                ):
+                    return
+
+                if str(output) == "True" or str(output) == "False":
+                    return
+
+                if expression in funcs.keys() or expression in symbols.keys():
+                    return
+
+                try:
+                    int(expression)
+                    return
+                except:
+                    pass
+
+                return await message.channel.send(
+                    embed=EmbedFactory(
+                        self.commands_info["calculate"]["embed"],
+                        formatting_data={
+                            "raw": message.content,
+                            "author": message.author.mention,
+                            "expression": expression,
+                            "output": output,
+                        },
+                    )
+                )
+            except:
+                return
 
         if "automath" not in self.cache[str(message.guild.id)]:
             self.cache[str(message.guild.id)]["automath"] = to_client.automath(
