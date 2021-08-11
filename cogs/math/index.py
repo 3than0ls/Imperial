@@ -86,7 +86,7 @@ class Math(ExtendedCog):
                 expression, output = self.eval(message.content)
                 # get rid of common exceptions
                 if (
-                    expression == "0-0"
+                    expression.startswith("0")
                     or expression == "24/7"
                     or expression == "24/7/365"
                     or expression.startswith("'")
@@ -135,7 +135,7 @@ class Math(ExtendedCog):
                 guild_id = str(message.guild.id)
                 if (
                     self.cd_cache[guild_id]
-                    and (now_time - self.cd_cache[guild_id]).total_seconds() < 2
+                    and (now_time - self.cd_cache[guild_id]).total_seconds() < 0.2
                 ):
                     return
                 else:
@@ -145,11 +145,13 @@ class Math(ExtendedCog):
 
                 # get rid of common exceptions
                 if (
-                    expression == "0-0"
+                    expression.startswith("0")
                     or expression == "24/7"
                     or expression == "24/7/365"
                     or expression.startswith("'")
                     or expression.startswith('"')
+                    or expression
+                    == "..."  # this needs an actual good fix - it outputs "Ellipses" for gods sake
                 ):
                     return
 
@@ -161,6 +163,7 @@ class Math(ExtendedCog):
 
                 try:
                     int(expression)
+                    float(expression)
                     return
                 except:
                     pass
@@ -176,7 +179,7 @@ class Math(ExtendedCog):
                         },
                     )
                 )
-            except:
+            except Exception:
                 pass
 
     @commands.command(aliases=["math_funcs"])
