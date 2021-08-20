@@ -1,6 +1,7 @@
 import sys
 import traceback
 
+import discord
 from discord.ext import commands
 from utils.cog import ExtendedCog  # pylint: disable=import-error
 from utils.embed import EmbedFactory  # pylint: disable=import-error
@@ -42,6 +43,19 @@ class ErrorHandler(ExtendedCog):
         if isinstance(error, ignored):
             return
 
+        elif isinstance(error, discord.errors.Forbidden):
+            await ctx.send(
+                embed=EmbedFactory(
+                    {
+                        "description": f":no_entry_sign: This action was unable to be performed, due to missing permission. Please allow the bot to have the highest possible administrator role.",
+                        "color": "error",
+                    },
+                    error=True,
+                    error_command_string=f">{ctx.invoked_with}",
+                )
+            )
+
+
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
                 embed=EmbedFactory(
@@ -64,6 +78,7 @@ class ErrorHandler(ExtendedCog):
                     error_command_string=ctx.invoked_with,
                 )
             )
+        
         else:
             error_command_string = f'{ctx.prefix}{(getattr(ctx.command, "root_parent", None) and (ctx.command.root_parent.name + " " + ctx.invoked_with)) or ctx.invoked_with}'
 
