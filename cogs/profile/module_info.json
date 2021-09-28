@@ -81,7 +81,9 @@
                     },
                     "errors": {
                         "ProfileError": "The profile \"{profile_name}\" was not found in this server's list of profiles. Perhaps a spelling error?\nRun `{prefix}profile list` to get a list of existing profiles.",
-                        "MemberError": "Please specify valid members to assign profiles to. The provided value \"{member}\" is not a valid member/mention/name/user ID."
+                        "MemberError": "Please specify valid members to assign profiles to. The provided value \"{member}\" is not a valid member/mention/name/user ID.",
+                        "ProfileHierarchyError": "Your highest role ({highest_role}) is not above the highest role ({highest_profile_role}) in profile **{profile_name}**, and so you cannot assign it.",
+                        "HierarchyError": "Your highest role ({highest_role}) is not above the highest role ({highest_member_role}) of {member}, so you cannot assign the profile **{profile_name}** to or any other profiles to them. Profiles are not assigned to any member past this one."
                     }
                 },
                 "add": {

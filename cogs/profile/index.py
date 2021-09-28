@@ -165,9 +165,36 @@ class Profile(ExtendedCog):
 
         role_objs = await validate_convert_roles(ctx, profile)
 
+        # determine if person that is assigning role is allowed to; their top role must be higher than the profile's top role,
+        highest_role = ctx.author.top_role
+        highest_profile_role = max(*role_objs)
+        if highest_role <= highest_profile_role and ctx.author != ctx.guild.owner:
+            raise commands.BadArgument(
+                self.commands_info["profile"]["subcommands"]["assign"]["errors"][
+                    "ProfileHierarchyError"
+                ].format(
+                    highest_role=highest_role.mention,
+                    highest_profile_role=highest_profile_role.mention,
+                    profile_name=profile_name,
+                )
+            )
+
         # for each member mentioned edit their roles
         for member_obj in member_objs:
-            await member_obj.edit(roles=role_objs)
+            # make sure you can assigner's top role is above assignee's top role, and if not, do not do
+            if highest_role <= member_obj.top_role and ctx.author != ctx.guild.owner:
+                raise commands.BadArgument(
+                    self.commands_info["profile"]["subcommands"]["assign"]["errors"][
+                        "HierarchyError"
+                    ].format(
+                        highest_role=highest_role.mention,
+                        highest_member_role=member_obj.top_role.mention,
+                        member=member_obj.mention,
+                        profile_name=profile_name,
+                    )
+                )
+            else:
+                await member_obj.edit(roles=role_objs)
 
         await ctx.send(
             embed=EmbedFactory(
